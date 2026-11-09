@@ -118,6 +118,17 @@ main{max-width:760px;margin:0 auto;padding:28px max(16px,env(safe-area-inset-lef
 .progress{height:6px;border-radius:99px;background:var(--surface2);overflow:hidden;margin:14px 0 10px}
 .progress span{display:block;width:0;height:100%;background:var(--accent);border-radius:99px;transition:width .2s ease}
 
+/* Teoria: concetti progressivi e esempi collegati alla tastiera */
+.theory-grid{display:grid;grid-template-columns:1fr;gap:0}
+.theory-level{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.theory-example{display:flex;flex-direction:column;gap:3px;padding:11px 13px;margin:10px 0;background:var(--surface2);border-radius:11px}
+.theory-example b{font-size:13px}.theory-example span{font-size:14px;color:var(--ink2);line-height:1.5}
+.theory-sequence{display:flex;align-items:center;justify-content:space-around;gap:8px;flex-wrap:wrap;padding:12px;margin:12px 0;background:var(--surface2);border-radius:11px;font-weight:700}
+.theory-sequence i{font-size:11px;color:var(--muted);font-style:normal;font-weight:500}
+.theory-callout{padding:13px 15px;background:var(--accent-soft);border-radius:11px;color:var(--ink2);font-size:14px;line-height:1.55;margin:16px 0 0}
+.theory-steps{padding-left:22px;color:var(--ink2);line-height:1.65}
+@media(min-width:700px){.theory-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}}
+
 /* Campi */
 .field{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--muted);font-weight:500}
 select,input,textarea{border:1px solid var(--line2);border-radius:10px;padding:10px 12px;background:var(--bg);color:var(--ink);min-height:44px}

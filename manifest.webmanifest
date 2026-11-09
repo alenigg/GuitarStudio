@@ -1,7 +1,7 @@
 {
   "name": "Guitar Studio",
   "short_name": "Guitar Studio",
-  "description": "Lezioni, accordatore, metronomo e diario per chitarra acustica.",
+  "description": "Lezioni progressive, teoria musicale, accordatore, metronomo e diario per chitarra acustica.",
   "id": "./",
   "lang": "it",
   "start_url": "./index.html",

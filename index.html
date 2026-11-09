@@ -100,7 +100,7 @@
     <section id="studio" class="view">
       <div class="page-heading"><p class="eyebrow">Imparare</p><h1>Studio</h1><p class="lede">Lezioni, teoria e tecnica, in ordine o a scelta.</p></div>
       <div class="rows">
-        <button class="row" data-go="lezioni"><span class="row-ico"><svg class="ico"><use href="#i-lessons"/></svg></span><span class="row-body"><b>Lezioni</b><small>Percorso didattico, 7 lezioni</small></span><svg class="ico chev"><use href="#i-next"/></svg></button>
+        <button class="row" data-go="lezioni"><span class="row-ico"><svg class="ico"><use href="#i-lessons"/></svg></span><span class="row-body"><b>Lezioni</b><small>Percorso didattico, 16 lezioni</small></span><svg class="ico chev"><use href="#i-next"/></svg></button>
         <button class="row" data-go="accordi"><span class="row-ico"><svg class="ico"><use href="#i-chords"/></svg></span><span class="row-body"><b>Accordi</b><small>Diagrammi, note e ascolto</small></span><svg class="ico chev"><use href="#i-next"/></svg></button>
         <button class="row" data-go="percorso"><span class="row-ico"><svg class="ico"><use href="#i-path"/></svg></span><span class="row-body"><b>Percorso accordi</b><small>Dalle basi al barrè</small></span><svg class="ico chev"><use href="#i-next"/></svg></button>
         <button class="row" data-go="esercizi"><span class="row-ico"><svg class="ico"><use href="#i-exercises"/></svg></span><span class="row-body"><b>Esercizi</b><small>Cromatismi, plettrata, arpeggi</small></span><svg class="ico chev"><use href="#i-next"/></svg></button>
@@ -150,27 +150,75 @@
 
     <section id="teoria" class="view">
       <button class="back" data-go="studio"><svg class="ico"><use href="#i-back"/></svg>Studio</button>
-      <div class="page-heading"><p class="eyebrow">Fondamenti</p><h1>Teoria musicale</h1><p class="lede">Le basi per capire note, tonalità, scale e ritmo.</p></div>
-      <div class="card">
-        <h2>Le note: internazionale e italiano</h2>
-        <p class="muted">Nel sistema internazionale si usano le lettere A–G. In Italia si usano Do, Re, Mi, Fa, Sol, La, Si.</p>
-        <div class="note-table">
-          <div><b>Internazionale</b><b>Italiano</b><b>Pronuncia</b></div>
-          <div><strong>C</strong><strong>DO</strong><span>Do</span></div><div><strong>D</strong><strong>RE</strong><span>Re</span></div>
-          <div><strong>E</strong><strong>MI</strong><span>Mi</span></div><div><strong>F</strong><strong>FA</strong><span>Fa</span></div>
-          <div><strong>G</strong><strong>SOL</strong><span>Sol</span></div><div><strong>A</strong><strong>LA</strong><span>La</span></div><div><strong>B</strong><strong>SI</strong><span>Si</span></div>
-        </div>
-        <p class="note">Negli accordi la lettera indica la fondamentale. Per esempio C = DO maggiore, Am = LA minore, G7 = SOL settima.</p>
-      </div>
-      <div class="card theory-panel">
-        <h2>Diesis, bemolle e semitoni</h2>
-        <p>Il diesis (♯) alza una nota di un semitono; il bemolle (♭) la abbassa di un semitono. Sulla chitarra, un tasto corrisponde a un semitono.</p>
-        <div class="semitone-row"><span>DO</span><i>→</i><span>DO♯ / RE♭</span><i>→</i><span>RE</span></div>
-        <h2>La scala maggiore</h2>
-        <p>La scala maggiore segue la sequenza di intervalli: tono – tono – semitono – tono – tono – tono – semitono.</p>
-        <div class="scale-pills"><span>DO</span><span>RE</span><span>MI</span><span>FA</span><span>SOL</span><span>LA</span><span>SI</span><span>DO</span></div>
-        <h2>Tempo e misura</h2>
-        <p>Il tempo indica la velocità (BPM). La misura raggruppa i battiti: nel 4/4 ci sono quattro pulsazioni per battuta; nel 3/4 tre; nel 6/8 sei suddivisioni di croma, sentite in due gruppi da tre.</p>
+      <div class="page-heading"><p class="eyebrow">Dalle basi all'armonia</p><h1>Teoria musicale</h1><p class="lede">Concetti brevi collegati alla tastiera, agli accordi e al ritmo. Parti dalle note e procedi dall'alto verso il basso.</p></div>
+      <div class="theory-grid">
+        <article class="card">
+          <span class="theory-level">01 · Le note</span><h2>Nomi italiani e internazionali</h2>
+          <p class="muted">Le sette note naturali corrispondono alle lettere da A a G. La sequenza ricomincia dopo SI/B.</p>
+          <div class="note-table">
+            <div><b>Lettera</b><b>Nome</b><b>Pronuncia</b></div>
+            <div><strong>C</strong><strong>DO</strong><span>Do</span></div><div><strong>D</strong><strong>RE</strong><span>Re</span></div><div><strong>E</strong><strong>MI</strong><span>Mi</span></div><div><strong>F</strong><strong>FA</strong><span>Fa</span></div><div><strong>G</strong><strong>SOL</strong><span>Sol</span></div><div><strong>A</strong><strong>LA</strong><span>La</span></div><div><strong>B</strong><strong>SI</strong><span>Si</span></div>
+          </div>
+          <p class="theory-callout">Negli accordi, una lettera sola indica normalmente un accordo maggiore: C = DO maggiore. La lettera m indica il minore: Am = LA minore.</p>
+        </article>
+        <article class="card">
+          <span class="theory-level">02 · Distanze</span><h2>Toni, semitoni, diesis e bemolli</h2>
+          <p>Un semitono è il passo più piccolo tra due tasti vicini. Due semitoni formano un tono. Il diesis alza la nota di un semitono; il bemolle la abbassa di un semitono.</p>
+          <div class="theory-sequence"><span>DO</span><i>½ tono</i><span>DO♯ / RE♭</span><i>½ tono</i><span>RE</span></div>
+          <div class="theory-example"><b>Le dodici altezze</b><span>DO · DO♯/RE♭ · RE · RE♯/MI♭ · MI · FA · FA♯/SOL♭ · SOL · SOL♯/LA♭ · LA · LA♯/SI♭ · SI</span></div>
+          <p>DO♯ e RE♭ sono due nomi per lo stesso suono sullo strumento temperato. Tra MI–FA e SI–DO c'è già un semitono: non serve un tasto intermedio.</p>
+          <p class="small-text muted">Sulla chitarra ogni tasto sposta la nota di un semitono, qualunque sia la corda.</p>
+        </article>
+        <article class="card">
+          <span class="theory-level">03 · La tastiera</span><h2>Orientarsi tra le corde</h2>
+          <p class="muted">In accordatura standard, dalla corda più grave alla più acuta: MI, LA, RE, SOL, SI, mi. Ogni corda riparte dal proprio nome a vuoto.</p>
+          <div class="theory-example"><b>Sesta corda · MI</b><span>vuota MI → 1° tasto FA → 3° tasto SOL → 5° tasto LA → 12° tasto MI</span></div>
+          <div class="theory-example"><b>Quinta corda · LA</b><span>vuota LA → 2° tasto SI → 3° tasto DO → 5° tasto RE → 12° tasto LA</span></div>
+          <p>Il dodicesimo tasto segna l'ottava della corda a vuoto. Lo stesso ordine di note si ripete poi più in alto.</p>
+        </article>
+        <article class="card">
+          <span class="theory-level">04 · Scale</span><h2>La scala maggiore e la minore naturale</h2>
+          <p>Le scale si costruiscono seguendo una sequenza di toni (T) e semitoni (S).</p>
+          <div class="theory-example"><b>Maggiore · T T S T T T S</b><span>DO – RE – MI – FA – SOL – LA – SI – DO</span></div>
+          <div class="theory-example"><b>Minore naturale · T S T T S T T</b><span>LA – SI – DO – RE – MI – FA – SOL – LA</span></div>
+          <p>DO maggiore e LA minore naturale usano le stesse note, ma hanno un diverso centro di riposo. Nominare i gradi mentre suoni aiuta a sentire il percorso.</p>
+        </article>
+        <article class="card">
+          <span class="theory-level">05 · Tonalità</span><h2>Armadure e circolo delle quinte</h2>
+          <p>La tonalità indica la nota che funge da centro e le alterazioni ricorrenti nella scala. In chiave, i diesis seguono l'ordine FA–DO–SOL–RE–LA–MI–SI; i bemolli SI–MI–LA–RE–SOL–DO–FA.</p>
+          <div class="theory-example"><b>Esempi</b><span>DO maggiore: nessuna alterazione · SOL maggiore: FA♯ · FA maggiore: SI♭</span></div>
+          <p>Salendo di quinta si aggiunge progressivamente un diesis; scendendo di quinta si aggiunge un bemolle. Le tonalità maggiori hanno una relativa minore con la stessa armatura: DO maggiore ↔ LA minore.</p>
+        </article>
+        <article class="card">
+          <span class="theory-level">06 · Accordi</span><h2>Come si forma una triade</h2>
+          <p>Una triade contiene fondamentale, terza e quinta. La fondamentale dà il nome all'accordo; la terza distingue il carattere maggiore o minore.</p>
+          <div class="theory-example"><b>DO maggiore</b><span>DO – MI – SOL · fondamentale, terza maggiore, quinta</span></div>
+          <div class="theory-example"><b>DO minore</b><span>DO – MI♭ – SOL · la terza scende di un semitono</span></div>
+          <div class="theory-example"><b>SOL settima · G7</b><span>SOL – SI – RE – FA · triade maggiore più settima di dominante</span></div>
+          <div class="theory-example"><b>Intervalli</b><span>Un intervallo misura la distanza tra due note. La terza maggiore copre quattro semitoni; la terza minore tre.</span></div>
+          <p>Le forme sulla chitarra possono raddoppiare alcune note o non includerle tutte. Apri una scheda accordo per vedere una diteggiatura e ascoltare le note.</p>
+        </article>
+        <article class="card">
+          <span class="theory-level">07 · Ritmo</span><h2>Valori, pulsazione e misure</h2>
+          <p>Il BPM indica quante pulsazioni cadono in un minuto. La battuta organizza le pulsazioni in gruppi regolari.</p>
+          <div class="theory-example"><b>In 4/4</b><span>Conta 1 – 2 – 3 – 4. Le crome dividono ogni battito in due: 1 e 2 e 3 e 4 e.</span></div>
+          <div class="theory-example"><b>In 3/4</b><span>Tre battiti per battuta: 1 – 2 – 3. Il primo battito è spesso il più marcato.</span></div>
+          <div class="theory-example"><b>In 6/8</b><span>Sei crome raggruppate in due pulsazioni principali, ognuna divisa in tre.</span></div>
+          <div class="theory-example"><b>Valori in 4/4</b><span>Semibreve = 4 battiti · minima = 2 · semiminima = 1 · croma = ½.</span></div>
+          <p class="small-text muted">Il metronomo dell'app ti permette di sentire queste misure. Parti contando, poi aggiungi una pennata per battito e infine suddividi.</p>
+        </article>
+        <article class="card">
+          <span class="theory-level">08 · Metodo</span><h2>Dal concetto alla pratica</h2>
+          <ol class="theory-steps"><li>Leggi una sola idea e individua l'esempio sulla tastiera.</li><li>Suonala lentamente, nominando note o conteggio.</li><li>Ripeti finché il suono è pulito e il tempo stabile.</li><li>Aumenta il BPM di pochi punti solo quando riesci a mantenere la precisione.</li></ol>
+          <p class="theory-callout">Se un esercizio crea dolore o tensione, fermati, rilassa la mano e riparti più lentamente. La velocità viene dopo il controllo.</p>
+        </article>
+        <article class="card">
+          <span class="theory-level">09 · Lettura</span><h2>Pentagramma e chiave di violino</h2>
+          <p>Le note si leggono dal basso verso l'alto. In chiave di violino le cinque linee sono MI–SOL–SI–RE–FA; gli spazi FA–LA–DO–MI. Salendo di una linea o di uno spazio, si passa alla nota successiva.</p>
+          <div class="theory-example"><b>Durate essenziali in 4/4</b><span>Semibreve: 4 battiti · minima: 2 · semiminima: 1 · croma: mezzo battito.</span></div>
+          <p>La chitarra è uno strumento traspositore all'ottava: la notazione convenzionale indica le note un'ottava sopra il suono reale. Per iniziare, concentra l'attenzione sulla posizione e sulla durata.</p>
+          <p class="small-text muted">Esercizio: ascolta il metronomo, suona quattro semiminime e poi otto crome senza cambiare pulsazione.</p>
+        </article>
       </div>
     </section>
 
@@ -188,7 +236,7 @@
       <button class="back" data-go="studio"><svg class="ico"><use href="#i-back"/></svg>Studio</button>
       <div class="page-heading"><p class="eyebrow">Studio guidato</p><h1>Percorso degli accordi</h1><p class="lede">Prima gli accordi aperti, poi i cambi più impegnativi e infine il barrè.</p></div>
       <div class="card path-intro">
-        <div class="path-progress-head"><div><span class="eyebrow">Il tuo progresso</span><h2 id="pathProgressText">0 di 4 tappe completate</h2></div></div>
+        <div class="path-progress-head"><div><span class="eyebrow">Il tuo progresso</span><h2 id="pathProgressText">0 di 7 tappe completate</h2></div></div>
         <div class="progress"><span id="pathProgressBar"></span></div>
         <p class="muted small-text">Completa una tappa quando riesci a formare gli accordi e a passare da uno all'altro con un suono pulito. Puoi ripetere le tappe in qualsiasi momento.</p>
       </div>

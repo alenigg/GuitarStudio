@@ -1,4 +1,4 @@
-# Guitar Studio PWA 1.9
+# Guitar Studio PWA 1.10
 
 Applicazione statica per lo studio della chitarra. Dopo il primo caricamento, le funzioni principali sono disponibili offline.
 
@@ -8,11 +8,13 @@ Applicazione statica per lo studio della chitarra. Dopo il primo caricamento, le
 - Diario di studio, obiettivo settimanale ed esportazione/ripristino dei dati.
 - Tema chiaro e scuro, backup locale e controllo aggiornamenti.
 - La voce Canzoni resta nei menu e mostra “Work in progress”.
+- Percorso progressivo: 16 lezioni, 7 tappe accordi e 18 esercizi, dalle basi al consolidamento.
+- Teoria ampliata: note, alterazioni, tastiera, scale, tonalità, triadi, ritmo e metodo di studio.
 
 ## Pubblicazione
 Estrai lo ZIP e pubblica il contenuto della cartella su un hosting HTTPS statico, per esempio Netlify o GitHub Pages. Le istruzioni passo passo sono in `ISTRUZIONI_PUBBLICAZIONE_HTTPS.txt`.
 
-La cache del service worker per questa versione è `guitar-studio-v1-9`.
+La cache del service worker per questa versione è `guitar-studio-v1-10`.
 
 ## Dati e privacy
 Il diario e i progressi vengono salvati nel browser del dispositivo. Usa “Salva backup” prima di cambiare indirizzo del sito, browser o dispositivo; usa “Ripristina backup” per recuperare i dati.

@@ -1,4 +1,4 @@
-GUITAR STUDIO PWA 1.9 — PUBBLICAZIONE E INSTALLAZIONE
+GUITAR STUDIO PWA 1.10 — PUBBLICAZIONE E INSTALLAZIONE
 
 Questa cartella contiene un sito statico pronto per un hosting HTTPS. Non richiede un server applicativo.
 
@@ -24,7 +24,10 @@ INSTALLAZIONE SU CHROMEBOOK O ANDROID
 4. Per l'accordatore, consenti l'accesso al microfono.
 
 AGGIORNAMENTI E CACHE OFFLINE
-La versione 1.9 usa la cache `guitar-studio-v1-9`. Dopo un aggiornamento, apri l'app online e premi “Controlla aggiornamenti” nella schermata iniziale. Una volta scaricati i file, riavvia l'app se richiesto. Dopo il primo caricamento completo, lezioni, accordi e strumenti restano disponibili offline; il microfono richiede comunque il permesso già concesso.
+La versione 1.10 usa la cache `guitar-studio-v1-10`. Dopo un aggiornamento, apri l'app online e premi “Controlla aggiornamenti” nella schermata iniziale. Una volta scaricati i file, riavvia l'app se richiesto. Dopo il primo caricamento completo, lezioni, accordi e strumenti restano disponibili offline; il microfono richiede comunque il permesso già concesso.
+
+NOVITÀ DIDATTICHE
+Le lezioni sono state estese a 16 unità progressive. Il percorso degli accordi comprende 7 tappe, dalle forme aperte al barrè, alle variazioni armoniche e alle mappe mobili. Gli esercizi sono 18 e sviluppano coordinazione, ritmo, lettura, arpeggi e cambi di accordo. La schermata Teoria musicale tratta note e alterazioni, tastiera, scale, tonalità, triadi, misure, pentagramma e un metodo per passare dalla spiegazione alla pratica.
 
 DATI PERSONALI
 Diario e progressi sono conservati localmente nel browser e non vengono inviati all'hosting. Prima di cambiare hosting o indirizzo, salva un backup dalla schermata iniziale e ripristinalo dopo aver aperto la nuova versione.
