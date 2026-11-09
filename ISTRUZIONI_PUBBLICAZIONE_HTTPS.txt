@@ -1,0 +1,33 @@
+GUITAR STUDIO PWA 1.9 — PUBBLICAZIONE E INSTALLAZIONE
+
+Questa cartella contiene un sito statico pronto per un hosting HTTPS. Non richiede un server applicativo.
+
+PUBBLICAZIONE SU NETLIFY
+1. Estrai lo ZIP.
+2. Apri https://app.netlify.com/drop e accedi al tuo account.
+3. Trascina la cartella estratta che contiene direttamente `index.html`, `app.js`, `data.js`, `styles.css` e `manifest.webmanifest`.
+4. Attendi la pubblicazione e apri l'indirizzo HTTPS assegnato.
+5. Per gli aggiornamenti successivi, carica la nuova versione del sito e poi apri l'app online con connessione Internet.
+
+PUBBLICAZIONE SU GITHUB PAGES
+1. Crea un repository GitHub pubblico chiamato, per esempio, `guitar-studio`.
+2. Carica nel repository i file contenuti nella cartella estratta, mantenendo la struttura delle cartelle.
+3. Apri Settings > Pages.
+4. In Build and deployment scegli Deploy from a branch, branch `main` e cartella `/ (root)`, poi salva.
+5. Quando GitHub termina la pubblicazione, apri l'indirizzo indicato nelle impostazioni Pages.
+6. Per pubblicare un aggiornamento, sostituisci nel repository i file con quelli della nuova versione.
+
+INSTALLAZIONE SU CHROMEBOOK O ANDROID
+1. Apri in Chrome l'indirizzo HTTPS pubblicato.
+2. Attendi il caricamento iniziale completo.
+3. Dal menu di Chrome scegli Installa app o Aggiungi a schermata Home.
+4. Per l'accordatore, consenti l'accesso al microfono.
+
+AGGIORNAMENTI E CACHE OFFLINE
+La versione 1.9 usa la cache `guitar-studio-v1-9`. Dopo un aggiornamento, apri l'app online e premi “Controlla aggiornamenti” nella schermata iniziale. Una volta scaricati i file, riavvia l'app se richiesto. Dopo il primo caricamento completo, lezioni, accordi e strumenti restano disponibili offline; il microfono richiede comunque il permesso già concesso.
+
+DATI PERSONALI
+Diario e progressi sono conservati localmente nel browser e non vengono inviati all'hosting. Prima di cambiare hosting o indirizzo, salva un backup dalla schermata iniziale e ripristinalo dopo aver aperto la nuova versione.
+
+SEZIONE CANZONI
+La voce Canzoni è presente nei menu e mostra “Work in progress”.

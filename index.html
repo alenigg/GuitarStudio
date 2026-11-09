@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f5f4ed" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#262624" media="(prefers-color-scheme: dark)">
+  <meta name="description" content="Guitar Studio: lezioni, accordatore, metronomo e diario di studio.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <script>try{var t=localStorage.getItem('guitarStudioTheme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
+  <link rel="stylesheet" href="styles.css">
+  <title>Guitar Studio</title>
+</head>
+<body>
+  <!-- Icone (set unico a tratto sottile) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></symbol>
+      <symbol id="i-studio" viewBox="0 0 24 24"><path d="M5 4a2 2 0 0 1 2-2h12v15H7a2 2 0 0 0-2 2zm0 15a2 2 0 0 0 2 2h12"/></symbol>
+      <symbol id="i-tools" viewBox="0 0 24 24"><path d="M4 7h8m4 0h4M4 17h4m4 0h8"/><circle cx="14" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></symbol>
+      <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></symbol>
+      <symbol id="i-diary" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+      <symbol id="i-lessons" viewBox="0 0 24 24"><path d="M12 3 2 8l10 5 10-5zM6 11v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></symbol>
+      <symbol id="i-theory" viewBox="0 0 24 24"><path d="M3 6h18M3 10h18M3 14h18M3 18h18"/></symbol>
+      <symbol id="i-chords" viewBox="0 0 24 24"><path d="M5 3v18M10 3v18M15 3v18M20 3v18M5 8h15M5 14h15"/></symbol>
+      <symbol id="i-path" viewBox="0 0 24 24"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M6 17V10a4 4 0 0 1 4-4h6"/></symbol>
+      <symbol id="i-exercises" viewBox="0 0 24 24"><path d="M17 2l4 4-4 4M3 11v-1a4 4 0 0 1 4-4h14M7 22l-4-4 4-4M21 13v1a4 4 0 0 1-4 4H3"/></symbol>
+      <symbol id="i-tuner" viewBox="0 0 24 24"><path d="M4 18a8 8 0 1 1 16 0M12 18l4-6"/></symbol>
+      <symbol id="i-metro" viewBox="0 0 24 24"><path d="M8 21h8l-2.5-17h-3zM12 15l4-7"/></symbol>
+      <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M5 19l1.5-1.5M17.5 6.5 19 5"/></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></symbol>
+      <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+      <symbol id="i-next" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+      <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></symbol>
+      <symbol id="i-pause" viewBox="0 0 24 24"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/></symbol>
+      <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5" fill="currentColor"/></symbol>
+      <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></symbol>
+      <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V5M7 9l5-5 5 5M5 20h14"/></symbol>
+      <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2 5.5M20 4v7h-7"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+      <symbol id="i-link" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+    </defs>
+  </svg>
+
+  <header class="topbar">
+    <button class="brand" data-go="home" aria-label="Guitar Studio, vai alla home">
+      <span class="brand-mark"><svg class="ico"><use href="#i-music"/></svg></span>
+      <span class="brand-name">Guitar Studio</span>
+    </button>
+    <div class="header-actions">
+      <button id="installBtn" class="btn small hidden" type="button">Installa app</button>
+      <button id="themeBtn" class="icon-btn" type="button" aria-label="Cambia tema chiaro/scuro"><svg class="ico"><use href="#i-moon"/></svg></button>
+    </div>
+  </header>
+
+  <main>
+    <!-- HOME -->
+    <section id="home" class="view active">
+      <div class="hero">
+        <p class="eyebrow">Il tuo spazio musicale</p>
+        <h1>Buono studio.</h1>
+        <p class="lede">Tutto ciò che ti serve per esercitarti, in un unico posto.</p>
+      </div>
+
+      <div class="stats-strip">
+        <div><strong id="weekMinutes">0</strong><span>minuti questa settimana</span></div>
+        <div><strong id="streakDays">0</strong><span>giorni di fila</span></div>
+        <div><strong id="totalMinutes">0</strong><span>minuti totali</span></div>
+      </div>
+
+      <div class="grid2">
+        <button class="tile" data-go="studio"><span class="tile-ico"><svg class="ico"><use href="#i-studio"/></svg></span><b>Studio</b><small>Lezioni, accordi, teoria, esercizi</small></button>
+        <button class="tile" data-go="strumenti"><span class="tile-ico"><svg class="ico"><use href="#i-tools"/></svg></span><b>Strumenti</b><small>Accordatore e metronomo</small></button>
+        <button class="tile" data-go="canzoni"><span class="tile-ico"><svg class="ico"><use href="#i-music"/></svg></span><b>Canzoni</b><small>Work in progress</small></button>
+        <button class="tile" data-go="diario"><span class="tile-ico"><svg class="ico"><use href="#i-diary"/></svg></span><b>Diario</b><small>Tieni traccia delle sessioni</small></button>
+      </div>
+
+      <h2 class="section-title">Accesso rapido</h2>
+      <div class="rows">
+        <button class="row" data-go="accordatore"><span class="row-ico"><svg class="ico"><use href="#i-tuner"/></svg></span><span class="row-body"><b>Accordatore</b><small>Accorda la chitarra con il microfono</small></span><svg class="ico chev"><use href="#i-next"/></svg></button>
+        <button class="row" data-go="metronomo"><span class="row-ico"><svg class="ico"><use href="#i-metro"/></svg></span><span class="row-body"><b>Metronomo</b><small>Allena il tempo</small></span><svg class="ico chev"><use href="#i-next"/></svg></button>
+        <button class="row" data-go="percorso"><span class="row-ico"><svg class="ico"><use href="#i-path"/></svg></span><span class="row-body"><b>Percorso accordi</b><small>Impara in ordine progressivo</small></span><svg class="ico chev"><use href="#i-next"/></svg></button>
+      </div>
+
+      <section class="card app-card">
+        <div class="app-card-head"><div><h2>Informazioni sull'app</h2><p class="muted small-text">Versione <span id="appVersion"></span> · i dati restano su questo dispositivo.</p></div></div>
+        <div class="btn-row">
+          <button id="updateBtn" class="btn secondary small" type="button"><svg class="ico"><use href="#i-refresh"/></svg><span>Controlla aggiornamenti</span></button>
+          <button id="backupExport" class="btn secondary small" type="button"><svg class="ico"><use href="#i-download"/></svg><span>Salva backup</span></button>
+          <label class="btn secondary small file-btn"><svg class="ico"><use href="#i-upload"/></svg><span>Ripristina backup</span><input id="backupImport" type="file" accept="application/json,.json" hidden></label>
+        </div>
+        <p id="backupMsg" class="small-text muted" role="status"></p>
+      </section>
+    </section>
+
+    <!-- HUB STUDIO -->
+    <section id="studio" class="view">
+      <div class="page-heading"><p class="eyebrow">Imparare</p><h1>Studio</h1><p class="lede">Lezioni, teoria e tecnica, in ordine o a scelta.</p></div>
+      <div class="rows">
+        <button class="row" data-go="lezioni"><span class="row-ico"><svg class="ico"><use href="#i-lessons"/></svg></span><span class="row-body"><b>Lezioni</b><small>Percorso didattico, 7 lezioni</small></span><svg class="ico chev"><use href="#i-next"/></svg></button>
+        <button class="row" data-go="accordi"><span class="row-ico"><svg class="ico"><use href="#i-chords"/></svg></span><span class="row-body"><b>Accordi</b><small>Diagrammi, note e ascolto</small></span><svg class="ico chev"><use href="#i-next"/></svg></button>
+        <button class="row" data-go="percorso"><span class="row-ico"><svg class="ico"><use href="#i-path"/></svg></span><span class="row-body"><b>Percorso accordi</b><small>Dalle basi al barrè</small></span><svg class="ico chev"><use href="#i-next"/></svg></button>
+        <button class="row" data-go="esercizi"><span class="row-ico"><svg class="ico"><use href="#i-exercises"/></svg></span><span class="row-body"><b>Esercizi</b><small>Cromatismi, plettrata, arpeggi</small></span><svg class="ico chev"><use href="#i-next"/></svg></button>
+        <button class="row" data-go="teoria"><span class="row-ico"><svg class="ico"><use href="#i-theory"/></svg></span><span class="row-body"><b>Teoria musicale</b><small>Note, scale e ritmo</small></span><svg class="ico chev"><use href="#i-next"/></svg></button>
+      </div>
+    </section>
+
+    <!-- HUB STRUMENTI -->
+    <section id="strumenti" class="view">
+      <div class="page-heading"><p class="eyebrow">Strumenti</p><h1>Strumenti</h1><p class="lede">Per accordare e per tenere il tempo.</p></div>
+      <div class="rows">
+        <button class="row" data-go="accordatore"><span class="row-ico"><svg class="ico"><use href="#i-tuner"/></svg></span><span class="row-body"><b>Accordatore</b><small>Accordatura standard · E A D G B e</small></span><svg class="ico chev"><use href="#i-next"/></svg></button>
+        <button class="row" data-go="metronomo"><span class="row-ico"><svg class="ico"><use href="#i-metro"/></svg></span><span class="row-body"><b>Metronomo</b><small>40–220 BPM · 2/4, 3/4, 4/4, 6/8</small></span><svg class="ico chev"><use href="#i-next"/></svg></button>
+      </div>
+    </section>
+
+    <section id="lezioni" class="view">
+      <button class="back" data-go="studio"><svg class="ico"><use href="#i-back"/></svg>Studio</button>
+      <div class="page-heading"><p class="eyebrow">Percorso didattico</p><h1>Lezioni</h1><p class="lede">Contenuti progressivi, teoria ed esercizi pratici.</p></div>
+      <div id="lessonList" class="rows"></div>
+      <p class="note">Le lezioni sono consultabili anche senza connessione.</p>
+    </section>
+
+    <section id="accordatore" class="view">
+      <button class="back" data-go="strumenti"><svg class="ico"><use href="#i-back"/></svg>Strumenti</button>
+      <div class="page-heading"><p class="eyebrow">Strumenti</p><h1>Accordatore</h1><p class="lede">Accordatura standard · E A D G B e</p></div>
+      <div class="card tuner-panel">
+        <div class="tuner-status" id="tunerStatus" role="status">Pronto per accordare</div>
+        <div class="note-display"><span id="noteName">—</span><small id="frequency">-- Hz</small></div>
+        <div class="meter"><div class="meter-center"></div><div class="meter-needle" id="needle"></div></div>
+        <div class="meter-labels"><span>♭ calante</span><span>accordata</span><span>crescente ♯</span></div>
+        <div class="tuner-readout"><span id="cents">0 cent</span><span id="stringName">Suona una corda</span></div>
+        <div class="headstock-card">
+          <div class="headstock-title">Corda rilevata</div>
+          <svg id="headstockGraphic" viewBox="0 0 340 170" role="img" aria-label="Schema delle sei meccaniche della chitarra">
+            <path class="hs-body" d="M170 14 C145 14 132 29 132 52 L132 118 Q132 145 170 155 Q208 145 208 118 L208 52 C208 29 195 14 170 14Z"/>
+            <path class="hs-mid" d="M170 20 L170 146"/>
+            <g id="tunerPins"></g>
+          </svg>
+          <div class="headstock-caption" id="headstockCaption">Suona una corda per evidenziarne la meccanica</div>
+        </div>
+        <button id="tunerStart" class="btn full">Avvia microfono</button>
+        <p class="small-text muted">Consenti l'accesso al microfono quando richiesto.</p>
+      </div>
+      <div class="string-strip"><span>MI</span><span>LA</span><span>RE</span><span>SOL</span><span>SI</span><span>mi</span><small>6ª · 5ª · 4ª · 3ª · 2ª · 1ª</small></div>
+    </section>
+
+    <section id="teoria" class="view">
+      <button class="back" data-go="studio"><svg class="ico"><use href="#i-back"/></svg>Studio</button>
+      <div class="page-heading"><p class="eyebrow">Fondamenti</p><h1>Teoria musicale</h1><p class="lede">Le basi per capire note, tonalità, scale e ritmo.</p></div>
+      <div class="card">
+        <h2>Le note: internazionale e italiano</h2>
+        <p class="muted">Nel sistema internazionale si usano le lettere A–G. In Italia si usano Do, Re, Mi, Fa, Sol, La, Si.</p>
+        <div class="note-table">
+          <div><b>Internazionale</b><b>Italiano</b><b>Pronuncia</b></div>
+          <div><strong>C</strong><strong>DO</strong><span>Do</span></div><div><strong>D</strong><strong>RE</strong><span>Re</span></div>
+          <div><strong>E</strong><strong>MI</strong><span>Mi</span></div><div><strong>F</strong><strong>FA</strong><span>Fa</span></div>
+          <div><strong>G</strong><strong>SOL</strong><span>Sol</span></div><div><strong>A</strong><strong>LA</strong><span>La</span></div><div><strong>B</strong><strong>SI</strong><span>Si</span></div>
+        </div>
+        <p class="note">Negli accordi la lettera indica la fondamentale. Per esempio C = DO maggiore, Am = LA minore, G7 = SOL settima.</p>
+      </div>
+      <div class="card theory-panel">
+        <h2>Diesis, bemolle e semitoni</h2>
+        <p>Il diesis (♯) alza una nota di un semitono; il bemolle (♭) la abbassa di un semitono. Sulla chitarra, un tasto corrisponde a un semitono.</p>
+        <div class="semitone-row"><span>DO</span><i>→</i><span>DO♯ / RE♭</span><i>→</i><span>RE</span></div>
+        <h2>La scala maggiore</h2>
+        <p>La scala maggiore segue la sequenza di intervalli: tono – tono – semitono – tono – tono – tono – semitono.</p>
+        <div class="scale-pills"><span>DO</span><span>RE</span><span>MI</span><span>FA</span><span>SOL</span><span>LA</span><span>SI</span><span>DO</span></div>
+        <h2>Tempo e misura</h2>
+        <p>Il tempo indica la velocità (BPM). La misura raggruppa i battiti: nel 4/4 ci sono quattro pulsazioni per battuta; nel 3/4 tre; nel 6/8 sei suddivisioni di croma, sentite in due gruppi da tre.</p>
+      </div>
+    </section>
+
+    <section id="accordi" class="view">
+      <button class="back" data-go="studio"><svg class="ico"><use href="#i-back"/></svg>Studio</button>
+      <div class="page-heading"><p class="eyebrow">Repertorio</p><h1>Gli accordi</h1><p class="lede">Diagrammi, diteggiatura e corde da suonare. Tocca un accordo per ascoltarlo.</p></div>
+      <div class="chips" id="chordFilters">
+        <button class="chip active" data-filter="tutti">Tutti</button><button class="chip" data-filter="Maggiori">Maggiori</button><button class="chip" data-filter="Minori">Minori</button><button class="chip" data-filter="Settima">Settime</button><button class="chip" data-filter="Altri">Sospesi e add</button>
+      </div>
+      <div id="chordGrid" class="chord-grid"></div>
+      <p class="note">Le corde vanno da sinistra (6ª, MI grave) a destra (1ª, mi cantino). × = corda da non suonare; ○ = corda a vuoto. Numeri: 1 indice, 2 medio, 3 anulare, 4 mignolo.</p>
+    </section>
+
+    <section id="percorso" class="view">
+      <button class="back" data-go="studio"><svg class="ico"><use href="#i-back"/></svg>Studio</button>
+      <div class="page-heading"><p class="eyebrow">Studio guidato</p><h1>Percorso degli accordi</h1><p class="lede">Prima gli accordi aperti, poi i cambi più impegnativi e infine il barrè.</p></div>
+      <div class="card path-intro">
+        <div class="path-progress-head"><div><span class="eyebrow">Il tuo progresso</span><h2 id="pathProgressText">0 di 4 tappe completate</h2></div></div>
+        <div class="progress"><span id="pathProgressBar"></span></div>
+        <p class="muted small-text">Completa una tappa quando riesci a formare gli accordi e a passare da uno all'altro con un suono pulito. Puoi ripetere le tappe in qualsiasi momento.</p>
+      </div>
+      <div id="chordPath" class="chord-path"></div>
+      <p class="note">Esercitati lentamente, controlla ogni corda e aumenta il metronomo solo quando il cambio è pulito e rilassato.</p>
+    </section>
+
+    <!-- CANZONI -->
+    <section id="canzoni" class="view">
+      <div class="page-heading"><p class="eyebrow">Canzoni</p><h1>Canzoni</h1><p class="lede">Work in progress</p></div>
+    </section>
+
+    <section id="esercizi" class="view">
+      <button class="back" data-go="studio"><svg class="ico"><use href="#i-back"/></svg>Studio</button>
+      <div class="page-heading"><p class="eyebrow">Allenamento tecnico</p><h1>Esercizi</h1><p class="lede">Routine brevi per coordinazione, precisione e indipendenza delle dita.</p></div>
+      <div id="exerciseList" class="rows"></div>
+    </section>
+
+    <section id="metronomo" class="view">
+      <button class="back" data-go="strumenti"><svg class="ico"><use href="#i-back"/></svg>Strumenti</button>
+      <div class="page-heading"><p class="eyebrow">Strumenti</p><h1>Metronomo</h1><p class="lede">Trova il tuo tempo e costruisci precisione.</p></div>
+      <div class="card metro-panel">
+        <div class="beat-lights" id="beatLights" aria-hidden="true"></div>
+        <div class="bpm-display"><strong id="bpmValue">80</strong><span>BPM</span></div>
+        <input id="bpmRange" class="range" type="range" min="40" max="220" value="80" aria-label="Battiti al minuto">
+        <div class="bpm-actions"><button id="bpmDown" class="round-btn" aria-label="Diminuisci">−</button><button id="bpmUp" class="round-btn" aria-label="Aumenta">+</button></div>
+        <div class="chips center"><button class="chip" data-bpm="60">Lento · 60</button><button class="chip" data-bpm="80">Moderato · 80</button><button class="chip" data-bpm="100">Allegro · 100</button><button class="chip" data-bpm="120">Veloce · 120</button></div>
+        <div class="control-row"><label for="beats">Tempo</label><select id="beats"><option value="2">2/4</option><option value="3">3/4</option><option value="4" selected>4/4</option><option value="6">6/8</option></select></div>
+        <button id="metroToggle" class="btn full"><svg class="ico"><use href="#i-play"/></svg><span>Avvia</span></button>
+        <p class="small-text muted">Nel 6/8 il valore BPM indica i due battiti principali (note puntate); i click sono sei.</p>
+      </div>
+    </section>
+
+    <section id="diario" class="view">
+      <div class="page-heading"><p class="eyebrow">Costanza e progressi</p><h1>Diario</h1><p class="lede">Tieni traccia del tempo dedicato alla chitarra.</p></div>
+      <div class="card goal-card">
+        <div class="goal-head"><div><span class="eyebrow">Obiettivo settimanale</span><h2><span id="goalDone">0</span> / <span id="goalTarget">60</span> minuti</h2></div>
+          <label class="field goal-field">Minuti<input type="number" id="goalInput" min="10" max="2000" step="10" value="60"></label></div>
+        <div class="progress"><span id="goalBar"></span></div>
+      </div>
+      <div class="card">
+        <h2>Nuova sessione</h2>
+        <form id="sessionForm" class="session-form">
+          <label class="field">Data<input type="date" id="sessionDate" required></label>
+          <label class="field">Durata (minuti)<input type="number" id="sessionDuration" min="1" max="600" value="20" required></label>
+          <label class="field">Attività<select id="sessionActivity"><option>Lezione</option><option>Tecnica</option><option>Accordi</option><option>Ritmica</option><option>Canzoni</option><option>Studio libero</option></select></label>
+          <label class="field wide">Note<textarea id="sessionNotes" rows="2" placeholder="Cosa hai studiato? Come è andata?"></textarea></label>
+          <button class="btn full wide" type="submit"><svg class="ico"><use href="#i-plus"/></svg><span>Salva sessione</span></button>
+        </form>
+      </div>
+      <div class="section-heading"><h2>Le tue sessioni</h2><button id="exportDiary" class="text-btn" type="button">Esporta CSV</button></div>
+      <div id="diaryEntries" class="diary-entries"></div>
+      <p class="small-text muted"><span id="sessionCount">0</span> sessioni registrate.</p>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Navigazione principale">
+    <button class="nav-item active" data-go="home"><svg class="ico"><use href="#i-home"/></svg><small>Home</small></button>
+    <button class="nav-item" data-go="studio"><svg class="ico"><use href="#i-studio"/></svg><small>Studio</small></button>
+    <button class="nav-item" data-go="strumenti"><svg class="ico"><use href="#i-tools"/></svg><small>Strumenti</small></button>
+    <button class="nav-item" data-go="canzoni"><svg class="ico"><use href="#i-music"/></svg><small>Canzoni</small></button>
+    <button class="nav-item" data-go="diario"><svg class="ico"><use href="#i-diary"/></svg><small>Diario</small></button>
+  </nav>
+
+  <dialog id="lessonDialog" class="lesson-dialog" aria-labelledby="dialogEyebrow">
+    <div class="dialog-head"><span class="eyebrow" id="dialogEyebrow">Lezione</span><button id="closeLesson" class="icon-btn" aria-label="Chiudi"><svg class="ico"><use href="#i-close"/></svg></button></div>
+    <div id="lessonContent"></div>
+  </dialog>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
