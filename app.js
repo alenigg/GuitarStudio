@@ -1,6 +1,6 @@
 'use strict';
-// Guitar Studio 1.10 — logica dell'app. I contenuti didattici sono in data.js.
-const APP_VERSION='1.10.1';
+// Guitar Studio 1.10.2 — logica dell'app. I contenuti didattici sono in data.js.
+const APP_VERSION='1.10.2';
 const $=id=>document.getElementById(id);
 const AudioCtor=window.AudioContext||window.webkitAudioContext;
 const pad2=n=>String(n).padStart(2,'0');
@@ -248,7 +248,7 @@ $('metroToggle').addEventListener('click',()=>metro.running?stopMetro():startMet
 
 /* ---------- Accordatore (autocorrelazione normalizzata + mediana) ---------- */
 const guitarStrings=[{n:'E2',f:82.4069},{n:'A2',f:110},{n:'D3',f:146.832},{n:'G3',f:195.998},{n:'B3',f:246.942},{n:'E4',f:329.628}];
-const tuner={running:false,stream:null,ctx:null,raf:null,recent:[],lastHit:0,frame:0};
+const tuner={running:false,starting:false,token:0,stream:null,ctx:null,raf:null,recent:[],lastHit:0,frame:0};
 (function buildPins(){
   const ns='http://www.w3.org/2000/svg',host=$('tunerPins');
   for(let i=0;i<6;i++){
@@ -281,17 +281,34 @@ function tunerIdle(){
   $('needle').style.transform='rotate(0deg)';$('needle').classList.remove('ok');highlightTunerString(-1);
 }
 async function startTuner(){
-  if(tuner.running){stopTuner();return}
+  if(tuner.running||tuner.starting){stopTuner();return}
+  if(!AudioCtor){$('tunerStatus').textContent='Audio non disponibile in questo browser.';return}
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){$('tunerStatus').textContent='Microfono non disponibile: apri l’app da Safari usando l’indirizzo HTTPS.';return}
+  const token=++tuner.token;
+  let ctx=null,stream=null;
+  tuner.starting=true;
+  $('tunerStart').textContent='Annulla';$('tunerStatus').textContent='Attendo il permesso del microfono…';
   try{
-    tuner.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
-    const ctx=new AudioCtor();await ctx.resume();tuner.ctx=ctx;
-    const src=ctx.createMediaStreamSource(tuner.stream),an=ctx.createAnalyser();an.fftSize=4096;src.connect(an);
-    const buf=new Float32Array(an.fftSize);tuner.running=true;tuner.recent=[];tuner.lastHit=performance.now();
+    // Safari su iOS richiede che resume() parta direttamente dal tocco, prima del dialogo del microfono.
+    ctx=new AudioCtor();tuner.ctx=ctx;
+    const resumePromise=Promise.resolve(ctx.resume());
+    const streamPromise=navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
+    stream=await streamPromise;
+    if(token!==tuner.token){stream.getTracks().forEach(track=>track.stop());return}
+    tuner.stream=stream;
+    await resumePromise;
+    if(ctx.state==='suspended')await ctx.resume();
+    if(ctx.state!=='running')throw new Error('audio-suspended');
+    const src=ctx.createMediaStreamSource(stream),an=ctx.createAnalyser();an.fftSize=4096;src.connect(an);
+    // Collega l’analizzatore a un’uscita muta: alcuni Safari aggiornano i campioni solo con un grafo attivo.
+    const silent=ctx.createGain();silent.gain.value=0;an.connect(silent);silent.connect(ctx.destination);
+    const buf=new Float32Array(an.fftSize),byteBuf=new Uint8Array(an.fftSize);tuner.starting=false;tuner.running=true;tuner.recent=[];tuner.lastHit=performance.now();
     $('tunerStart').textContent='Ferma accordatore';$('tunerStatus').textContent='Ascolto in corso…';
     const loop=()=>{
       if(!tuner.running)return;
       if((tuner.frame++&1)===0){
-        an.getFloatTimeDomainData(buf);const f=detectPitch(buf,ctx.sampleRate);
+        if(an.getFloatTimeDomainData)an.getFloatTimeDomainData(buf);else{an.getByteTimeDomainData(byteBuf);for(let i=0;i<byteBuf.length;i++)buf[i]=(byteBuf[i]-128)/128}
+        const f=detectPitch(buf,ctx.sampleRate);
         if(f>60&&f<400){
           tuner.lastHit=performance.now();tuner.recent.push(f);if(tuner.recent.length>5)tuner.recent.shift();
           const med=tuner.recent.slice().sort((a,b)=>a-b)[Math.floor(tuner.recent.length/2)];
@@ -304,11 +321,19 @@ async function startTuner(){
       }
       tuner.raf=requestAnimationFrame(loop);
     };loop();
-  }catch(err){$('tunerStatus').textContent='Microfono non disponibile: controlla i permessi e la connessione sicura (HTTPS).'}
+  }catch(err){
+    if(token!==tuner.token)return;
+    if(stream)stream.getTracks().forEach(track=>track.stop());
+    tuner.stream=null;tuner.starting=false;
+    if(ctx&&tuner.ctx===ctx){try{ctx.close()}catch(e){}tuner.ctx=null}
+    $('tunerStart').textContent='Avvia microfono';
+    const messages={NotAllowedError:'Permesso microfono negato: abilitalo nelle impostazioni di Safari per questo sito.',NotFoundError:'Non è stato trovato un microfono disponibile.',NotReadableError:'Il microfono è occupato da un’altra app. Chiudila e riprova.',SecurityError:'Il microfono richiede una connessione HTTPS.'};
+    $('tunerStatus').textContent=messages[err.name]||'Non riesco ad avviare l’accordatore. Tocca Avvia e consenti il microfono.';
+  }
 }
 function stopTuner(){
-  if(!tuner.running&&!tuner.stream)return;
-  tuner.running=false;cancelAnimationFrame(tuner.raf);
+  if(!tuner.running&&!tuner.starting&&!tuner.stream&&!tuner.ctx)return;
+  tuner.token++;tuner.running=false;tuner.starting=false;cancelAnimationFrame(tuner.raf);
   if(tuner.stream)tuner.stream.getTracks().forEach(t=>t.stop());tuner.stream=null;
   if(tuner.ctx){tuner.ctx.close();tuner.ctx=null}
   $('tunerStart').textContent='Avvia microfono';$('tunerStatus').textContent='Accordatore fermo';tunerIdle();
