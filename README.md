@@ -1,4 +1,4 @@
-# Guitar Studio PWA 2.1.0
+# Guitar Studio PWA 2.2.0
 
 Applicazione statica per lo studio della chitarra. Dopo il primo caricamento, le funzioni principali sono disponibili offline.
 
@@ -15,11 +15,21 @@ Applicazione statica per lo studio della chitarra. Dopo il primo caricamento, le
 ## Pubblicazione
 Estrai lo ZIP e pubblica il contenuto della cartella su un hosting HTTPS statico, per esempio Netlify o GitHub Pages. Le istruzioni passo passo sono in `ISTRUZIONI_PUBBLICAZIONE_HTTPS.txt`.
 
-La cache del service worker per questa versione è `guitar-studio-v2-1-0`.
+La cache del service worker per questa versione è `guitar-studio-v2-2-0`.
 
 ## Dati e privacy
 Il diario e i progressi vengono salvati nel browser del dispositivo. Usa “Salva backup” prima di cambiare indirizzo del sito, browser o dispositivo; usa “Ripristina backup” per recuperare i dati.
 
+
+## Novità 2.2.0 — giri blues e esercizi per ogni livello
+
+Autostrada ora ha 18 brani, raggruppati per categoria (Primi passi, Blues e rock, Melodie e classici, Tecnica) e ordinati dal più facile al più difficile.
+- **Blues a 12 battute in MI (E)** (MI, LA, SI sui bassi) e **Blues minore in LA (Am)** (Am, Dm, F, E): i due giri che ogni chitarrista incontra presto.
+- **Basso “walking” in LA (A)**: otto note a battuta che camminano sull'accordo, sulle 12 battute del blues.
+- **Pentatonica di MI minore (Em)**: la scala del rock in posizione aperta, su e giù per tutte le corde.
+- **Tecnica**: *Ragno cromatico* (un dito per tasto, dal 5° all'8°, su tutte le corde), *Scala di SOL (G) maggiore* in 2ª posizione, *Salta-corde* per allenare la mira.
+- Pagina Sfide: spaziatura uniforme tra le schede (14 px) e margini finali sistemati.
+- Nota sulle fonti: le sequenze sono scritte da zero con gli schemi tradizionali del blues (nessun dato copiato da raccolte con licenze restrittive, es. GPL o uso personale).
 
 ## Novità 2.1.0 — repertorio più da chitarristi
 
@@ -37,7 +47,7 @@ Nuovo repertorio per Autostrada (12 brani, in tre livelli di difficoltà). Via l
 
 La chitarra diventa il controller. L'app ascolta il microfono, riconosce note e accordi e ti guida mentre suoni. L'audio viene analizzato sul dispositivo e subito scartato: non viene registrato né inviato.
 
-- **Autostrada** (stile Guitar Hero): le note scendono su sei corsie, una per corda, con il numero del tasto. Brani di difficoltà crescente (elenco nella versione 2.1.0). Due modi: *A tempo* (giudizi Perfetto/Bene/Presto/Tardi, serie, stelle) e *Aspetta me* (il brano si ferma finché suoni la nota giusta). Velocità 60%, 80%, 100%.
+- **Autostrada** (stile Guitar Hero): le note scendono su sei corsie, una per corda, con il numero del tasto. Brani di difficoltà crescente (elenco nelle versioni 2.1.0 e 2.2.0). Due modi: *A tempo* (giudizi Perfetto/Bene/Presto/Tardi, serie, stelle) e *Aspetta me* (il brano si ferma finché suoni la nota giusta). Velocità 60%, 80%, 100%.
 - **Caccia alla nota**: nota e corda a caso, da trovare sulla tastiera il più in fretta possibile; 4 livelli, suggerimento con tastiera illustrata.
 - **Eco**: ascolta una melodia e ripetila; ad ogni giro si aggiunge una nota (allena l'orecchio).
 - **Cambi lampo**: quanti cambi di accordo in 30, 60 o 90 secondi; il riconoscimento usa il cromagramma dell'audio.

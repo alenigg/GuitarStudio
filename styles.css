@@ -412,3 +412,16 @@ input[type=range]{padding:0;min-height:0;border:0;background:none;accent-color:v
 .tune-bar{position:relative;height:12px;border-radius:99px;background:var(--surface2);margin:14px 0}.tune-bar i{position:absolute;left:50%;top:-3px;bottom:-3px;width:2px;background:var(--good)}.tune-bar b{position:absolute;left:50%;top:-2px;width:14px;height:16px;margin-left:-7px;border-radius:5px;background:var(--accent);transition:left .1s}
 .calib{text-align:center}.flash{width:120px;height:120px;border-radius:50%;margin:8px auto 14px;background:var(--surface2);border:3px solid var(--line2);transition:background .05s}.flash.on{background:var(--accent);border-color:var(--accent);box-shadow:0 0 40px var(--accent)}
 .calib-count{font-family:var(--serif);font-size:24px;margin:0 0 6px}
+
+/* Sfide: ritmo verticale uniforme tra i riquadri */
+#sfideHub{display:flex;flex-direction:column;gap:14px}
+#sfideHub>.card{margin-bottom:0}
+#sfideHub>.section-title{margin:14px 0 -6px}
+#sfideHub .rows{margin:0}
+.card>:last-child{margin-bottom:0}
+.card>h2:first-child{margin-top:0}
+.level-card .lv-body small{display:block;margin-top:2px}
+.mission p{margin:2px 0 6px}
+.slider-field{margin:16px 0 4px}
+.check-field{margin:14px 0 10px}
+.coach .weak-list+.btn{margin-top:2px}
