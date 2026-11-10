@@ -1,4 +1,4 @@
-# Guitar Studio PWA 1.11.1
+# Guitar Studio PWA 1.12.0
 
 Applicazione statica per lo studio della chitarra. Dopo il primo caricamento, le funzioni principali sono disponibili offline.
 
@@ -8,19 +8,19 @@ Applicazione statica per lo studio della chitarra. Dopo il primo caricamento, le
 - Diario di studio, obiettivo settimanale ed esportazione/ripristino dei dati.
 - Tema chiaro e scuro, backup locale e controllo aggiornamenti.
 - La voce Canzoni resta nei menu e mostra “Work in progress”.
-- Percorso progressivo: 22 lezioni, 11 tappe accordi e 18 esercizi, dalle basi al consolidamento.
+- Percorso progressivo: 23 lezioni, 12 tappe accordi e 24 esercizi, dalle basi al consolidamento.
 - Teoria ampliata: note, alterazioni, tastiera, scale, tonalità, triadi, ritmo e metodo di studio.
 
 ## Pubblicazione
 Estrai lo ZIP e pubblica il contenuto della cartella su un hosting HTTPS statico, per esempio Netlify o GitHub Pages. Le istruzioni passo passo sono in `ISTRUZIONI_PUBBLICAZIONE_HTTPS.txt`.
 
-La cache del service worker per questa versione è `guitar-studio-v1-11-1`.
+La cache del service worker per questa versione è `guitar-studio-v1-12-0`.
 
 ## Dati e privacy
 Il diario e i progressi vengono salvati nel browser del dispositivo. Usa “Salva backup” prima di cambiare indirizzo del sito, browser o dispositivo; usa “Ripristina backup” per recuperare i dati.
 
 
-## Novità 1.11.1
+## Novità 1.12.0
 
 - Schede accordo apribili direttamente dalle lezioni.
 - Metronomo integrato e regolabile nelle attività didattiche.
@@ -31,3 +31,12 @@ Il diario e i progressi vengono salvati nel browser del dispositivo. Usa “Salv
 - Percorso accordi riorganizzato in righe compatte apribili, come l'elenco delle lezioni.
 - Tabella delle note musicali corretta: sette righe complete e colonne Italiano, Internazionale e Pronuncia.
 
+
+
+## Novità 1.12.0
+- Lezioni da 16 a 23: accordatura, schemi di pennata, valzer in 3/4, settime e add9, capotasto, giri di accordi, costruzione di una sessione.
+- Esercizi da 18 a 24 (con tablatura della scala di DO e metronomo in 3/4); corretti gli esercizi 03 e 12.
+- Percorso accordi: 12 tappe, esercizi pratici specifici per ogni tappa, nuovi accordi (Fm, Gm, Bm7, G/B, Esus4, versione semplificata di F), corrette le diteggiature di F5 e G5.
+- Segna come completate lezioni ed esercizi; backup include i progressi.
+- Il metronomo nelle schede si ferma anche con Esc; supporto a battute in 3/4.
+- Import backup: le date non valide vengono scartate.

@@ -309,3 +309,11 @@ input[type=range]{padding:0;min-height:0;border:0;background:none;accent-color:v
 .path-practice{padding-left:22px;margin:10px 0 0;color:var(--ink2)}
 .path-practice li{font-size:14px;line-height:1.6;margin:7px 0}
 .chord-fret-label{fill:var(--muted);font:600 9px var(--sans)}
+
+/* 1.12 */
+.tab-block{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.35;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;overflow-x:auto;white-space:pre;color:var(--ink)}
+.row.is-done .row-ico{background:var(--ink);color:var(--bg)}
+.row.is-done .row-body small::after{content:" · fatta"}
+.done-toggle{margin-top:18px}
+.done-toggle .ico{width:18px;height:18px}
+.done-summary{margin:0 0 12px}

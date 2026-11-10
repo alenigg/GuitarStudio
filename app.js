@@ -1,6 +1,6 @@
 'use strict';
 // Guitar Studio 1.11.1 — logica dell'app. I contenuti didattici sono in data.js.
-const APP_VERSION='1.11.1';
+const APP_VERSION='1.12.0';
 const $=id=>document.getElementById(id);
 const AudioCtor=window.AudioContext||window.webkitAudioContext;
 const pad2=n=>String(n).padStart(2,'0');
@@ -68,7 +68,7 @@ paintThemeBtn();
 
 /* ---------- Finestra di dettaglio ---------- */
 const dialogHistory=[];
-function openDialog(eyebrow,html,{keepCurrent=false,chords=[],bpm=0}={}){
+function openDialog(eyebrow,html,{keepCurrent=false,chords=[],bpm=0,beats=4,doneKey=''}={}){
   stopInlineMetronome();
   const dialog=$('lessonDialog');
   if(dialog.open&&keepCurrent)dialogHistory.push({eyebrow:$('dialogEyebrow').textContent,html:$('lessonContent').innerHTML});
@@ -76,7 +76,8 @@ function openDialog(eyebrow,html,{keepCurrent=false,chords=[],bpm=0}={}){
   $('dialogEyebrow').textContent=eyebrow;
   $('lessonContent').innerHTML=html;
   if(chords.length)$('lessonContent').insertAdjacentHTML('beforeend',`<div class="lesson-chord-links"><h3>Apri gli accordi citati</h3><div class="btn-row">${chords.map(n=>{const c=chordByName(n);return c?`<button type="button" class="btn small secondary" data-open-chord="${esc(c.name)}">${esc(chordLabel(c))}</button>`:''}).join('')}</div></div>`);
-  if(bpm)$('lessonContent').insertAdjacentHTML('beforeend',inlineMetronomeMarkup('lesson',bpm));
+  if(bpm)$('lessonContent').insertAdjacentHTML('beforeend',inlineMetronomeMarkup('lesson',bpm,beats));
+  if(doneKey)$('lessonContent').insertAdjacentHTML('beforeend',`<button type="button" class="btn full done-toggle" data-done-key="${esc(doneKey)}"></button>`);
   bindInteractiveContent($('lessonContent'));
   if(!dialog.open)dialog.showModal();
 }
@@ -86,12 +87,17 @@ function closeDialogLayer(){
   $('lessonDialog').close();
 }
 $('closeLesson').addEventListener('click',closeDialogLayer);
+$('lessonDialog').addEventListener('close',()=>{stopInlineMetronome();dialogHistory.length=0});
 $('lessonDialog').addEventListener('click',e=>{if(e.target===$('lessonDialog'))closeDialogLayer()});
 
 /* ---------- Lezioni ed esercizi ---------- */
-function rowButton(num,title,sub){const b=document.createElement('button');b.className='row';b.innerHTML=`<span class="row-ico">${num}</span><span class="row-body"><b>${title}</b><small>${sub}</small></span>${ico('next','chev')}`;return b}
-lessons.forEach(l=>{const b=rowButton(l.n,l.title,`${l.sub} · ${l.time}`);b.addEventListener('click',()=>openDialog('Lezione',`<h2>${l.n} · ${l.title}</h2><p class="muted">${l.sub} · ${l.time}</p>${l.body}`,{chords:lessonChordRefs[l.n]||[],bpm:l.bpm||(l.body.toLowerCase().includes('metronomo')?60:0)}));$('lessonList').appendChild(b)});
-exerciseData.forEach(ex=>{const b=rowButton(ex.n,ex.title,ex.level);b.addEventListener('click',()=>openDialog('Esercizio',`<h2>${ex.n} · ${ex.title}</h2><p class="muted">${ex.level}</p><p>${ex.body}</p><div class="exercise"><b>Sequenza da provare</b><p class="exercise-pattern">${ex.pattern}</p><h3>Procedura</h3><ol><li>Prepara la posizione e suona lentamente una volta per prendere confidenza.</li><li>Ripeti la sequenza per quattro cicli, controllando che ogni movimento sia preciso.</li><li>Fai una breve pausa, poi riparti e confronta la regolarità del suono.</li><li>Concludi con un ciclo lento e pulito, senza accelerare per finire prima.</li></ol><p><b>Obiettivo:</b> completare tre cicli consecutivi senza fermarti e senza tensione.</p></div>`,{chords:ex.chords||[],bpm:ex.bpm||0}));$('exerciseList').appendChild(b)});
+const KEY_DONE='guitarStudioDoneV1';
+function isDone(k){return loadJSON(KEY_DONE,[]).includes(k)}
+function toggleDone(k){const a=loadJSON(KEY_DONE,[]);const i=a.indexOf(k);if(i>=0)a.splice(i,1);else a.push(k);saveJSON(KEY_DONE,a)}
+function refreshDoneMarks(){document.querySelectorAll('[data-done-row]').forEach(r=>r.classList.toggle('is-done',isDone(r.dataset.doneRow)));const t=document.getElementById('doneCount');if(t){const l=lessons.filter(x=>isDone('l'+x.n)).length,e=exerciseData.filter(x=>isDone('e'+x.n)).length;t.textContent=`${l}/${lessons.length} lezioni · ${e}/${exerciseData.length} esercizi`}}
+function rowButton(num,title,sub,key){const b=document.createElement('button');b.className='row';if(key)b.dataset.doneRow=key;b.innerHTML=`<span class="row-ico">${num}</span><span class="row-body"><b>${title}</b><small>${sub}</small></span>${ico('next','chev')}`;return b}
+lessons.forEach(l=>{const b=rowButton(l.n,l.title,`${l.sub} · ${l.time}`,'l'+l.n);b.addEventListener('click',()=>openDialog('Lezione',`<h2>${l.n} · ${l.title}</h2><p class="muted">${l.sub} · ${l.time}</p>${l.body}`,{chords:lessonChordRefs[l.n]||[],bpm:l.bpm!==undefined?l.bpm:(l.body.toLowerCase().includes('metronomo')?60:0),beats:l.beats||4,doneKey:'l'+l.n}));$('lessonList').appendChild(b)});
+exerciseData.forEach(ex=>{const b=rowButton(ex.n,ex.title,ex.level,'e'+ex.n);b.addEventListener('click',()=>openDialog('Esercizio',`<h2>${ex.n} · ${ex.title}</h2><p class="muted">${ex.level}</p><p>${ex.body}</p><div class="exercise"><b>Sequenza da provare</b><p class="exercise-pattern">${ex.pattern}</p>${ex.tab?`<pre class="tab-block" aria-label="Tablatura">${ex.tab.join('\n')}</pre>`:''}<h3>Procedura</h3><ol><li>Prepara la posizione e suona lentamente una volta per prendere confidenza.</li><li>Ripeti la sequenza per quattro cicli, controllando che ogni movimento sia preciso.</li><li>Fai una breve pausa, poi riparti e confronta la regolarità del suono.</li><li>Concludi con un ciclo lento e pulito, senza accelerare per finire prima.</li></ol><p><b>Obiettivo:</b> completare tre cicli consecutivi senza fermarti e senza tensione.</p></div>`,{chords:ex.chords||[],bpm:ex.bpm||0,beats:ex.beats||4,doneKey:'e'+ex.n}));$('exerciseList').appendChild(b)});
 
 /* ---------- Accordi ---------- */
 const NOTE_INT=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];
@@ -141,12 +147,14 @@ function openChordDetail(ch,keepCurrent=false){
   $('playArpeggio').addEventListener('click',()=>playChord(ch,true));
 }
 
-function inlineMetronomeMarkup(id,bpm=60){
+function inlineMetronomeMarkup(id,bpm=60,beats=4){
   const value=Math.max(40,Math.min(220,Number(bpm)||60));
-  return `<div class="inline-metronome" data-inline-metro="${esc(id)}" data-bpm="${value}"><div class="inline-metro-head"><b>Prova con il metronomo</b><span class="inline-bpm"><button type="button" class="round-btn" data-inline-step="-5" aria-label="Diminuisci il tempo">−</button><output>${value} BPM</output><button type="button" class="round-btn" data-inline-step="5" aria-label="Aumenta il tempo">+</button></span></div><div class="inline-beats" aria-hidden="true">${[0,1,2,3].map((_,i)=>`<i class="${i===0?'accent':''}"></i>`).join('')}</div><button type="button" class="btn small full" data-inline-toggle>${ico('play')}<span>Avvia</span></button><p class="small-text muted" data-inline-status aria-live="polite">Regola il tempo e avvia quando sei pronto.</p></div>`;
+  return `<div class="inline-metronome" data-inline-metro="${esc(id)}" data-bpm="${value}" data-beats="${beats}"><div class="inline-metro-head"><b>Prova con il metronomo</b><span class="inline-bpm"><button type="button" class="round-btn" data-inline-step="-5" aria-label="Diminuisci il tempo">−</button><output>${value} BPM</output><button type="button" class="round-btn" data-inline-step="5" aria-label="Aumenta il tempo">+</button></span></div><div class="inline-beats" aria-hidden="true">${Array.from({length:beats},(_,i)=>i).map((_,i)=>`<i class="${i===0?'accent':''}"></i>`).join('')}</div><button type="button" class="btn small full" data-inline-toggle>${ico('play')}<span>Avvia</span></button><p class="small-text muted" data-inline-status aria-live="polite">Regola il tempo e avvia quando sei pronto.</p></div>`;
 }
 function bindInteractiveContent(root){
   root.querySelectorAll('[data-open-chord]').forEach(button=>button.addEventListener('click',()=>{const chord=chordByName(button.dataset.openChord);if(chord)openChordDetail(chord,true)}));
+  root.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>{$('lessonDialog').close();dialogHistory.length=0;go(b.dataset.go)}));
+  root.querySelectorAll('[data-done-key]').forEach(b=>{const k=b.dataset.doneKey;const paint=()=>{const d=isDone(k);b.classList.toggle('secondary',d);b.innerHTML=d?`${ico('check')}<span>Completata · tocca per annullare</span>`:'<span>Segna come completata</span>'};paint();b.addEventListener('click',()=>{toggleDone(k);paint();refreshDoneMarks()})});
   root.querySelectorAll('.inline-metronome').forEach(box=>{
     box.querySelectorAll('[data-inline-step]').forEach(button=>button.addEventListener('click',()=>{
       const bpm=Math.max(40,Math.min(220,(Number(box.dataset.bpm)||60)+Number(button.dataset.inlineStep)));
@@ -161,7 +169,7 @@ async function toggleInlineMetronome(box){
   const ctx=await getCtx();if(!ctx){box.querySelector('[data-inline-status]').textContent='Audio non disponibile in questo browser.';return}
   inlineMetro.running=true;inlineMetro.box=box;inlineMetro.ctx=ctx;inlineMetro.index=0;inlineMetro.queue=[];inlineMetro.next=ctx.currentTime+.05;
   box.querySelector('[data-inline-toggle]').innerHTML=`${ico('pause')}<span>Ferma</span>`;box.querySelector('[data-inline-status]').textContent='Metronomo attivo';
-  const tick=()=>{if(!inlineMetro.running)return;while(inlineMetro.next<ctx.currentTime+.12){clickSound(ctx,inlineMetro.next,inlineMetro.index%4===0?2:0);inlineMetro.queue.push({t:inlineMetro.next,i:inlineMetro.index%4});inlineMetro.next+=60/(Number(box.dataset.bpm)||60);inlineMetro.index++}inlineMetro.timer=setTimeout(tick,25)};
+  const tick=()=>{if(!inlineMetro.running)return;while(inlineMetro.next<ctx.currentTime+.12){clickSound(ctx,inlineMetro.next,inlineMetro.index%(Number(box.dataset.beats)||4)===0?2:0);inlineMetro.queue.push({t:inlineMetro.next,i:inlineMetro.index%(Number(box.dataset.beats)||4)});inlineMetro.next+=60/(Number(box.dataset.bpm)||60);inlineMetro.index++}inlineMetro.timer=setTimeout(tick,25)};
   const frame=()=>{if(!inlineMetro.running)return;let last=null;while(inlineMetro.queue.length&&inlineMetro.queue[0].t<=ctx.currentTime)last=inlineMetro.queue.shift();if(last&&inlineMetro.box===box)box.querySelectorAll('.inline-beats i').forEach((el,i)=>el.classList.toggle('on',i===last.i));inlineMetro.raf=requestAnimationFrame(frame)};
   tick();frame();
 }
@@ -235,7 +243,7 @@ function download(name,text,type){const a=document.createElement('a');a.href=URL
 
 /* ---------- Backup completo ---------- */
 $('backupExport').addEventListener('click',()=>{
-  const data={app:'guitar-studio',version:APP_VERSION,date:new Date().toISOString(),sessions,pathDone:loadJSON(KEY_PATH,[]),weeklyGoal};
+  const data={app:'guitar-studio',version:APP_VERSION,date:new Date().toISOString(),sessions,pathDone:loadJSON(KEY_PATH,[]),done:loadJSON(KEY_DONE,[]),weeklyGoal};
   download(`guitar-studio-backup-${isoLocal()}.json`,JSON.stringify(data,null,1),'application/json');
   $('backupMsg').textContent='Backup salvato nei download del dispositivo.';
 });
@@ -245,10 +253,11 @@ $('backupImport').addEventListener('change',async e=>{
     const d=JSON.parse(await f.text());
     if(d.app!=='guitar-studio'||!Array.isArray(d.sessions))throw new Error('formato');
     if(!confirm(`Ripristinare il backup? Verranno sostituiti i dati attuali (${sessions.length} sessioni) con quelli del file (${d.sessions.length} sessioni).`))return;
-    sessions=d.sessions.filter(s=>s&&s.date&&Number.isFinite(Number(s.duration))).map(s=>({id:s.id||Date.now()+Math.random(),date:String(s.date),duration:Number(s.duration),activity:String(s.activity||'Studio libero'),notes:String(s.notes||'')}));
+    sessions=d.sessions.filter(s=>s&&/^\d{4}-\d{2}-\d{2}$/.test(String(s.date))&&!isNaN(new Date(s.date+'T12:00:00'))&&Number.isFinite(Number(s.duration))).map(s=>({id:s.id||Date.now()+Math.random(),date:String(s.date),duration:Number(s.duration),activity:String(s.activity||'Studio libero'),notes:String(s.notes||'')}));
     saveJSON(KEY_SESSIONS,sessions);saveJSON(KEY_PATH,Array.isArray(d.pathDone)?d.pathDone:[]);
+    if(Array.isArray(d.done))saveJSON(KEY_DONE,d.done.map(String));
     if(d.weeklyGoal){weeklyGoal=Number(d.weeklyGoal)||60;saveJSON(KEY_GOAL,weeklyGoal)}
-    renderDiary();renderChordPath();$('backupMsg').textContent='Backup ripristinato.';
+    renderDiary();renderChordPath();refreshDoneMarks();$('backupMsg').textContent='Backup ripristinato.';
   }catch(err){$('backupMsg').textContent='File non valido: scegli un backup creato da Guitar Studio.'}
 });
 
@@ -396,7 +405,7 @@ $('tunerStart').addEventListener('click',startTuner);
 document.addEventListener('visibilitychange',()=>{if(document.hidden){stopTuner();stopMetro()}});
 
 /* ---------- Installazione e aggiornamenti PWA ---------- */
-$('appVersion').textContent=APP_VERSION;
+$('appVersion').textContent=APP_VERSION;refreshDoneMarks();
 let deferredPrompt=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBtn').classList.remove('hidden')});
 $('installBtn').addEventListener('click',async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('installBtn').classList.add('hidden')});

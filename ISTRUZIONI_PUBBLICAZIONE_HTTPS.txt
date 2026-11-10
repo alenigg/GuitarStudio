@@ -32,7 +32,7 @@ AGGIORNAMENTI E CACHE OFFLINE
 La versione 1.11.1 usa la cache `guitar-studio-v1-11-1`. Dopo un aggiornamento, apri l'app online e premi “Controlla aggiornamenti” nella schermata iniziale. Una volta scaricati i file, riavvia l'app se richiesto. Dopo il primo caricamento completo, lezioni, accordi e strumenti restano disponibili offline; l’accordatore richiede il permesso del microfono.
 
 NOVITÀ DIDATTICHE
-Le lezioni sono state estese a 22 unità progressive. Il percorso degli accordi comprende 11 tappe, dalle forme aperte al barrè, alle variazioni armoniche e alle mappe mobili. Gli esercizi sono 18 e sviluppano coordinazione, ritmo, lettura, arpeggi e cambi di accordo. La schermata Teoria musicale tratta note e alterazioni, tastiera, scale, tonalità, triadi, misure, pentagramma e un metodo per passare dalla spiegazione alla pratica.
+Le lezioni sono state estese a 23 unità progressive. Il percorso degli accordi comprende 12 tappe, dalle forme aperte al barrè, alle variazioni armoniche e alle mappe mobili. Gli esercizi sono 24 e sviluppano coordinazione, ritmo, lettura, arpeggi e cambi di accordo. La schermata Teoria musicale tratta note e alterazioni, tastiera, scale, tonalità, triadi, misure, pentagramma e un metodo per passare dalla spiegazione alla pratica.
 
 DATI PERSONALI
 Diario e progressi sono conservati localmente nel browser e non vengono inviati all'hosting. Prima di cambiare hosting o indirizzo, salva un backup dalla schermata iniziale e ripristinalo dopo aver aperto la nuova versione.
