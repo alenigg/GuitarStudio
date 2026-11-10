@@ -151,7 +151,7 @@ input[type=range]{padding:0;min-height:0;border:0;background:none;accent-color:v
 
 /* Teoria */
 .note-table{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-top:16px}
-.note-table-head,.note-table-row{display:grid;grid-template-columns:1.2fr 1fr 1fr;align-items:center}
+.note-table-head,.note-table-row{display:grid;grid-template-columns:1fr 1fr;align-items:center}
 .note-table-head{background:var(--surface2)}
 .note-table-head b,.note-table-row>*{padding:9px 6px;text-align:center;border-bottom:1px solid var(--line)}
 .note-table-head b{font-size:11px;color:var(--muted);font-weight:600;line-height:1.25}
@@ -317,3 +317,35 @@ input[type=range]{padding:0;min-height:0;border:0;background:none;accent-color:v
 .done-toggle{margin-top:18px}
 .done-toggle .ico{width:18px;height:18px}
 .done-summary{margin:0 0 12px}
+
+/* Teoria illustrata */
+.illu{margin:14px 0;padding:10px 6px;background:var(--surface2);border-radius:12px;border:1px solid var(--line)}
+.illu svg{display:block;width:100%;height:auto;max-width:520px;margin:0 auto}
+.illu text{fill:var(--ink2);font-family:var(--sans);font-size:12px}
+.illu .t.s{font-size:11px}.illu .b{font-weight:700;fill:var(--ink)}
+.illu .t2{font-size:10px;fill:var(--muted)}.illu .t2.s{font-size:10px}
+.illu .x{font-size:16px;fill:var(--ink)}
+.illu .key{fill:#fff;stroke:#8b887c;stroke-width:1.2}
+.illu .bkey{fill:#2b2a28;stroke:#1f1e1d}
+.illu .pill{fill:var(--accent)}.illu .pillt{fill:#fff!important;font-size:11px;font-weight:700}
+.illu .wood{fill:#b9855a;stroke:#7a5233}.illu .metal{fill:var(--muted)}
+.illu .neck{fill:#6e4a2e}.illu .nut{fill:#efe9d6}.illu .fret{stroke:#cfc9b6;stroke-width:1.4}
+.illu .body{fill:#c98f5c;stroke:#7a5233;stroke-width:1.6}.illu .hole{fill:#2b2a28}
+.illu .bridge{fill:#4a3220}.illu .str{stroke:#efe9d6;stroke-width:.9}
+.illu .lead{stroke:var(--muted);stroke-width:.8}
+.illu .nutbar{fill:var(--ink)}.illu .nutbar2{stroke:var(--ink);stroke-width:4}
+.illu .fretl,.illu .strl,.illu .ring{stroke:var(--line2);stroke-width:1.3;fill:none}
+.illu .ring2{stroke:var(--line2);stroke-width:1;fill:none}
+.illu .strl{stroke:var(--muted)}
+.illu .dot{fill:var(--surface);stroke:var(--line2);stroke-width:1.2}
+.illu .dot.root{fill:var(--accent-soft);stroke:var(--accent)}
+.illu .dt{fill:var(--ink)!important}.illu .dt2{fill:var(--muted)!important}
+.illu .stl{stroke:var(--ink2);stroke-width:1}
+.illu .nh,.illu .stem{fill:var(--ink)}.illu .stem{stroke:var(--ink);stroke-width:1.3}
+.illu .nhh{fill:none;stroke:var(--ink);stroke-width:1.6}.illu .flag{fill:none;stroke:var(--ink);stroke-width:1.5}
+.illu .seg{fill:var(--surface);stroke:var(--line2)}.illu .seg.alt{fill:var(--accent-soft)}
+.illu .tabbg{fill:var(--surface2)}
+.illu .fdot{fill:var(--accent);stroke:none}.illu .fd{fill:#fff!important}
+.illu .open{fill:none;stroke:var(--ink);stroke-width:1.6}
+.theory-sub{font-family:var(--serif);font-size:17px;margin:20px 0 4px;color:var(--ink)}
+.theory-list{margin:10px 0 0;padding-left:20px;color:var(--ink2);line-height:1.6;font-size:14px}

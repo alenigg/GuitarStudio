@@ -40,3 +40,7 @@ Il diario e i progressi vengono salvati nel browser del dispositivo. Usa “Salv
 - Segna come completate lezioni ed esercizi; backup include i progressi.
 - Il metronomo nelle schede si ferma anche con Esc; supporto a battute in 3/4.
 - Import backup: le date non valide vengono scartate.
+- Nomenclatura uniforme: note e accordi sempre in italiano con la sigla internazionale tra parentesi (es. MI minore (Em)); rimossa la colonna «Pronuncia» dalla teoria.
+- Lessico unificato in tutti i menu (tempo/BPM, plettrata e pennata, smorzamento, sezione Accordi, capodastro, tasti con numeri ordinali).
+- Teoria musicale ampliata a 11 schede con 10 illustrazioni: tastiera di pianoforte, parti della chitarra, tastiera con le note, circolo delle quinte, lettura dei diagrammi d'accordo, valori delle note, misure, pentagramma e tablatura.
+- Percorso accordi: lo stato «completata» usa lo stesso stile di lezioni ed esercizi (pulsante nella scheda e segno nell'elenco).
