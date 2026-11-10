@@ -127,19 +127,26 @@ const SONGS=[
   {id:'a3',name:'Inno alla gioia',sub:'Beethoven · prima frase, sulle prime due corde',bpm:84,level:'Facile',
    notes:mkNotes([n(E4),n(E4),n(F4),n(G4),n(G4),n(F4),n(E4),n(D4),n(C4),n(C4),n(D4),n(E4),n(E4,1.5),n(D4,.5),n(D4,2),
                   n(E4),n(E4),n(F4),n(G4),n(G4),n(F4),n(E4),n(D4),n(C4),n(C4),n(D4),n(E4),n(D4,1.5),n(C4,.5),n(C4,2)])},
-  {id:'a4',name:'Fra Martino',sub:'Canone tradizionale · melodia in DO (C)',bpm:88,level:'Medio',
-   notes:mkNotes([n(C4),n(D4),n(E4),n(C4),n(C4),n(D4),n(E4),n(C4),n(E4),n(F4),n(G4,2),n(E4),n(F4),n(G4,2),
-                  n(G4,.5),n(A4,.5),n(G4,.5),n(F4,.5),n(E4),n(C4),n(G4,.5),n(A4,.5),n(G4,.5),n(F4,.5),n(E4),n(C4),
-                  n(C4),n(G3),n(C4,2),n(C4),n(G3),n(C4,2)])},
-  {id:'a5',name:'Jingle Bells',sub:'Ritornello tradizionale · ascolta e verifica a orecchio',bpm:96,level:'Medio',
-   notes:mkNotes([n(E4),n(E4),n(E4,2),n(E4),n(E4),n(E4,2),n(E4),n(G4),n(C4,1.5),n(D4,.5),n(E4,4)])},
+  {id:'a9',name:'Blues a 12 battute in LA (A)',sub:'Il boogie dei bluesman: LA (A), RE (D) e MI (E) sui bassi',bpm:92,level:'Medio',
+   notes:mkNotes((()=>{const A=[[5,0],[4,2],[5,0],[4,4]],D=[[4,0],[3,2],[4,0],[3,4]],Em=[[6,0],[5,2],[6,0],[5,4]];
+     const bars=[A,A,A,A,D,D,A,A,Em,D,A,Em];const out=[];bars.forEach((b,i)=>b.forEach((x,j)=>out.push([x[0],x[1],(i===11&&j===3)?2:1])));return out})())},
+  {id:'a10',name:'Scala blues di LA (A)',sub:'La scala dei solisti, con la “nota blu” RE♯ (D♯) · 5ª posizione',bpm:76,level:'Medio',
+   notes:mkNotes([[6,5],[6,8],[5,5],[5,6],[5,7],[4,5],[4,7],[3,5],[4,7],[4,5],[5,7],[5,6],[5,5],[6,8],[6,5,2]])},
+  {id:'a11',name:'Canone di Pachelbel · basso',sub:'Il celebre giro di otto note, sui bassi · RE (D) LA (A) SI (B) FA♯ (F♯) SOL (G)',bpm:72,level:'Medio',
+   notes:mkNotes((()=>{const b=[[4,0],[5,0],[5,2],[6,2],[6,3],[4,0],[6,3],[5,0]];const out=[];for(let r=0;r<3;r++)b.forEach((x,j)=>out.push([x[0],x[1],(r===2&&j===7)?2:1]));return out})())},
+  {id:'a14',name:'Arpeggi: LA minore, DO, RE, FA',sub:'Un giro d’accordi suonato nota per nota (Am · C · D · F)',bpm:84,level:'Medio',
+   notes:mkNotes([[5,0],[4,2],[3,2],[2,1],[3,2],[4,2],  [5,3],[4,2],[3,0],[2,1],[3,0],[4,2],  [4,0],[3,2],[2,3],[1,2],[2,3],[3,2],  [4,3],[3,2],[2,1],[1,1],[2,1],[3,2],  [5,0,2]])},
   {id:'a6',name:'Scala di DO (C)',sub:'In prima posizione, salendo e scendendo',bpm:72,level:'Medio',
    notes:mkNotes([[5,3],[4,0],[4,2],[4,3],[3,0],[3,2],[2,0],[2,1],[2,0],[3,2],[3,0],[4,3],[4,2],[4,0],[5,3,2]])},
-  {id:'a7',name:'Arpeggio di LA minore (Am)',sub:'Cinque corde, un tasto alla volta',bpm:76,level:'Medio',
-   notes:mkNotes([[5,0],[4,2],[3,2],[2,1],[1,0],[2,1],[3,2],[4,2],[5,0],[4,2],[3,2],[2,1],[1,0],[2,1],[3,2],[4,2],[5,0,2]])},
-  {id:'a8',name:'Ruggine',sub:'Riff originale sui bassi · 6ª e 5ª corda',bpm:84,level:'Difficile',
+  {id:'a12',name:'Canone di Pachelbel · melodia',sub:'La frase più famosa, in RE maggiore (D) · passa da una corda all’altra',bpm:66,level:'Difficile',
+   notes:mkNotes((()=>{const m=[[1,2],[1,0],[2,3],[2,2],[2,0],[3,2],[2,0],[2,2]];const out=[];for(let r=0;r<3;r++)m.forEach((x,j)=>out.push([x[0],x[1],(r===2&&j===7)?2:1]));return out})())},
+  {id:'a13',name:'Andaluso',sub:'Frase originale in stile flamenco · modo frigio sulla 1ª corda',bpm:78,level:'Difficile',
+   notes:mkNotes([[1,0],[1,1],[1,3],[1,5],[1,3],[1,1],[1,0,2],  [1,5],[1,3],[1,1],[1,0],[1,1],[1,0],[2,3],[1,0,2],  [1,0],[1,1],[1,3],[1,5],[1,8],[1,5],[1,3],[1,1],[1,0,3]])},
+  {id:'a8',name:'Ruggine',sub:'Riff originale hard rock sui bassi · 6ª e 5ª corda',bpm:84,level:'Difficile',
    notes:mkNotes([[6,0],[6,0],[6,3],[6,0],[5,2],[5,0],[6,3],[6,5],[6,0],[6,0],[6,3],[6,0],[5,2],[5,3],[5,2],[6,0,2],
-                  [6,0],[6,0],[6,3],[6,5],[5,0],[5,2],[5,3],[5,2],[6,3],[6,0,3]])}
+                  [6,0],[6,0],[6,3],[6,5],[5,0],[5,2],[5,3],[5,2],[6,3],[6,0,3]])},
+  {id:'a7',name:'Arpeggio di LA minore (Am)',sub:'Cinque corde, un tasto alla volta',bpm:76,level:'Medio',hidden:true,
+   notes:mkNotes([[5,0],[4,2],[3,2],[2,1],[1,0],[2,1],[3,2],[4,2],[5,0],[4,2],[3,2],[2,1],[1,0],[2,1],[3,2],[4,2],[5,0,2]])}
 ];
 const songById=id=>SONGS.find(s=>s.id===id);
 const levelColor=l=>l==='Facile'?'good':l==='Medio'?'mid':'hard';
@@ -203,7 +210,7 @@ const opts0={mode:'tempo',speed:1,tap:false};
 function autoPicker(){
   const ws=weakSong();
   html(stage,`<div class="page-heading"><p class="eyebrow">Sfide · Autostrada</p><h1>Autostrada</h1><p class="lede">Le note scendono su sei corsie, una per corda. Suonale quando toccano la linea: il microfono ti ascolta.</p></div>
-  <div class="rows">${SONGS.map(s=>{const b=G.best[s.id];return`<button class="row song-row" data-song="${s.id}"><span class="row-ico"><svg class="ico"><use href="#i-music"/></svg></span><span class="row-body"><b>${esc(s.name)}</b><small>${esc(s.sub)}</small></span><span class="lvl ${levelColor(s.level)}">${s.level}</span><span class="stars">${stars(b?b.stars:0)}</span></button>`}).join('')}
+  <div class="rows">${SONGS.filter(s=>!s.hidden).map(s=>{const b=G.best[s.id];return`<button class="row song-row" data-song="${s.id}"><span class="row-ico"><svg class="ico"><use href="#i-music"/></svg></span><span class="row-body"><b>${esc(s.name)}</b><small>${esc(s.sub)}</small></span><span class="lvl ${levelColor(s.level)}">${s.level}</span><span class="stars">${stars(b?b.stars:0)}</span></button>`}).join('')}
   ${ws?`<button class="row song-row" data-song="weak"><span class="row-ico"><svg class="ico"><use href="#i-game"/></svg></span><span class="row-body"><b>Allena i punti deboli</b><small>Un percorso su misura con le note che sbagli di più</small></span><span class="lvl mid">Su misura</span></button>`:''}</div>
   <p class="small-text muted">Melodie di pubblico dominio o originali. Le stelle si guadagnano con la precisione: 1★ da metà delle note giuste, 2★ dal 75%, 3★ dal 92%.</p>`);
   stage.querySelectorAll('[data-song]').forEach(b=>b.addEventListener('click',()=>{const s=b.dataset.song==='weak'?weakSong():songById(b.dataset.song);if(s)autoSetup(s)}));
@@ -719,7 +726,7 @@ async function calibrate(){
    HOME DELLE SFIDE
    ===================================================================== */
 const GAMES=[
-  {id:'auto',name:'Autostrada',ico:'music',small:()=>{const n=SONGS.reduce((a,s)=>a+(G.best[s.id]?G.best[s.id].stars:0),0);return`Note che scendono, stile Guitar Hero · ${n}/${SONGS.length*3} ★`},open:()=>{autoPicker()}},
+  {id:'auto',name:'Autostrada',ico:'music',small:()=>{const vis=SONGS.filter(s=>!s.hidden),n=vis.reduce((a,s)=>a+(G.best[s.id]?G.best[s.id].stars:0),0);return`Note che scendono, stile Guitar Hero · ${n}/${vis.length*3} ★`},open:()=>{autoPicker()}},
   {id:'caccia',name:'Caccia alla nota',ico:'game',small:()=>'Trova la nota sulla tastiera, più veloce che puoi',open:()=>cacciaSetup()},
   {id:'eco',name:'Eco',ico:'tuner',small:()=>'Ascolta la melodia e ripetila: allena l’orecchio',open:()=>ecoSetup()},
   {id:'cambi',name:'Cambi lampo',ico:'chords',small:()=>'Quanti cambi di accordo in 60 secondi?',open:()=>cambiSetup()}

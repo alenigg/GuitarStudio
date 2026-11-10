@@ -1,4 +1,4 @@
-# Guitar Studio PWA 2.0.0
+# Guitar Studio PWA 2.1.0
 
 Applicazione statica per lo studio della chitarra. Dopo il primo caricamento, le funzioni principali sono disponibili offline.
 
@@ -15,17 +15,29 @@ Applicazione statica per lo studio della chitarra. Dopo il primo caricamento, le
 ## Pubblicazione
 Estrai lo ZIP e pubblica il contenuto della cartella su un hosting HTTPS statico, per esempio Netlify o GitHub Pages. Le istruzioni passo passo sono in `ISTRUZIONI_PUBBLICAZIONE_HTTPS.txt`.
 
-La cache del service worker per questa versione è `guitar-studio-v2-0-0`.
+La cache del service worker per questa versione è `guitar-studio-v2-1-0`.
 
 ## Dati e privacy
 Il diario e i progressi vengono salvati nel browser del dispositivo. Usa “Salva backup” prima di cambiare indirizzo del sito, browser o dispositivo; usa “Ripristina backup” per recuperare i dati.
 
 
+## Novità 2.1.0 — repertorio più da chitarristi
+
+Nuovo repertorio per Autostrada (12 brani, in tre livelli di difficoltà). Via le filastrocche (Fra Martino, Jingle Bells); al loro posto:
+- **Blues a 12 battute in LA (A)**: il boogie sui bassi, con la vera struttura delle 12 battute (LA, RE, MI).
+- **Scala blues di LA (A)** con la «nota blu» RE♯ (D♯), 5ª posizione.
+- **Canone di Pachelbel**: il basso di otto note e la frase principale della melodia (brano del Seicento, di pubblico dominio).
+- **Arpeggi su LA minore (Am), DO (C), RE (D), FA (F)**: un giro d'accordi suonato nota per nota.
+- **Andaluso**: frase originale in stile flamenco sul modo frigio.
+- **Ruggine**: riff hard rock originale (già presente), insieme a Corde a vuoto, Tre note sulla 1ª corda, Inno alla gioia e Scala di DO (C).
+- Riconoscimento più affidabile quando ripeti la stessa nota o suoni note basse mentre altre corde risuonano ancora; sensibilità predefinita del microfono più alta.
+- Nuovi brani originali o di pubblico dominio: nessuna canzone moderna protetta da diritti d'autore.
+
 ## Novità 2.0.0 — Sfide
 
 La chitarra diventa il controller. L'app ascolta il microfono, riconosce note e accordi e ti guida mentre suoni. L'audio viene analizzato sul dispositivo e subito scartato: non viene registrato né inviato.
 
-- **Autostrada** (stile Guitar Hero): le note scendono su sei corsie, una per corda, con il numero del tasto. 8 brani: corde a vuoto, tre note sulla 1ª corda, Inno alla gioia, Fra Martino, Jingle Bells, scala di DO (C), arpeggio di LA minore (Am) e il riff originale «Ruggine». Due modi: *A tempo* (giudizi Perfetto/Bene/Presto/Tardi, serie, stelle) e *Aspetta me* (il brano si ferma finché suoni la nota giusta). Velocità 60%, 80%, 100%.
+- **Autostrada** (stile Guitar Hero): le note scendono su sei corsie, una per corda, con il numero del tasto. Brani di difficoltà crescente (elenco nella versione 2.1.0). Due modi: *A tempo* (giudizi Perfetto/Bene/Presto/Tardi, serie, stelle) e *Aspetta me* (il brano si ferma finché suoni la nota giusta). Velocità 60%, 80%, 100%.
 - **Caccia alla nota**: nota e corda a caso, da trovare sulla tastiera il più in fretta possibile; 4 livelli, suggerimento con tastiera illustrata.
 - **Eco**: ascolta una melodia e ripetila; ad ogni giro si aggiunge una nota (allena l'orecchio).
 - **Cambi lampo**: quanti cambi di accordo in 30, 60 o 90 secondi; il riconoscimento usa il cromagramma dell'audio.

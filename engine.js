@@ -85,7 +85,8 @@
     if(mx<=0)return null;
     const peaks=[];
     for(let k=Math.ceil(70/df);k<Math.min(half-2,Math.floor(2500/df));k++){
-      if(D[k]>=.06*mx&&D[k]>D[k-1]&&D[k]>=D[k+1]){const y1=D[k-1],y2=D[k],y3=D[k+1],den=y1-2*y2+y3,sh=den?.5*(y1-y3)/den:0;peaks.push({f:(k+sh)*df,a:y2})}}
+      // picchi dello spettro "dopo" (forma non alterata), tenuti solo se l'energia è nuova rispetto a "prima"
+      if(A[k]>A[k-1]&&A[k]>=A[k+1]&&D[k]>=.06*mx&&D[k]>=.35*A[k]){const y1=A[k-1],y2=A[k],y3=A[k+1],den=y1-2*y2+y3,sh=den?.5*(y1-y3)/den:0;peaks.push({f:(k+sh)*df,a:D[k]})}}
     if(!peaks.length)return null;
     const W=[1,.8,.62,.5,.4];let best=null,total=peaks.reduce((a,p)=>a+p.a,0);
     for(let m=40;m<=88;m++){const f0=midiToFreq(m);let sc=0,fund=null;
@@ -93,7 +94,7 @@
         for(const p of peaks){const c=Math.abs(1200*Math.log2(p.f/tgt));if(c<38&&(!bp||p.a>bp.a))bp=p}
         if(bp){sc+=W[h-1]*bp.a;if(h===1)fund=bp}}
       if(!best||sc>best.sc*1.02)best={m,sc,f0,fund}}
-    if(!best||best.sc<.3*total)return null;
+    if(!best||best.sc<.4*total)return null;
     // frequenza precisa: media delle armoniche trovate, ricondotte alla fondamentale
     let num=0,den=0;for(let h=1;h<=5;h++){const tgt=best.f0*h;let bp=null;for(const p of peaks){const c=Math.abs(1200*Math.log2(p.f/tgt));if(c<38&&(!bp||p.a>bp.a))bp=p}if(bp){num+=bp.a*bp.f/h;den+=bp.a}}
     const f=den?num/den:best.f0;return{f,midi:Math.round(freqToMidi(f)),cents:(freqToMidi(f)-Math.round(freqToMidi(f)))*100,score:best.sc/total};
@@ -124,12 +125,12 @@
       this.last={rms,f:p.f,clarity:p.clarity,flux};
       this.tracker.frame(t,rms,p.f,p.clarity,flux,tOn).forEach(x=>{
         if(x.type==='onset'){
-          const onS=Math.round(x.t*sr),prevRms=rmsLast(this.seg(onS-1024,1024),1024);
+          const onS=Math.round(x.t*sr),prevRms=rmsLast(this.seg(onS-384-1024,1024),1024);
           x.ringing=prevRms>.3*x.rms;
           this.curRinging=x.ringing;
           if(x.ringing)this.pending.push({onS,t:x.t,rms:x.rms});
           ev.push(x);
-        }else if(x.type==='note'&&this.curRinging){/* l'altezza si ricava dal confronto prima/dopo (più sotto) */}
+        }else if(x.type==='note'&&this.curRinging){const q=this.pending.find(p=>p.t===x.t);if(q)q.blind=x}   // l'altezza si ricava dal confronto prima/dopo (più sotto); questa è la riserva
         else ev.push(x);
       });
       // note sovrapposte a corde ancora in vibrazione: confronto spettrale 85 ms dopo l'attacco
@@ -137,6 +138,7 @@
         const q=this.pending.shift(),after=this.seg(q.onS-96,4096),before=this.seg(q.onS-96-4096-64,4096),r=diffPitch(after,before,sr);
         if(r&&this.tracker.cur&&this.tracker.cur.t===q.t)this.tracker.cur.done=true;
         if(r)ev.push({type:'note',t:q.t,tDetected:this.time,f:r.f,midi:r.midi,cents:r.cents,clarity:Math.min(1,r.score*2),rms:q.rms,ringing:true});
+        else if(q.blind)ev.push(Object.assign({},q.blind,{ringing:true,repeat:true}));   // stessa nota ripetuta: prima e dopo coincidono
         else ev.push({type:'noise',t:q.t});
       }
     }
