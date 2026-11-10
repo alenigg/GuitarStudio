@@ -1,17 +1,18 @@
-GUITAR STUDIO PWA 1.11.1 — PUBBLICAZIONE E INSTALLAZIONE
+GUITAR STUDIO PWA 2.0.0 — PUBBLICAZIONE E INSTALLAZIONE
 
 Questa cartella contiene un sito statico pronto per un hosting HTTPS. Non richiede un server applicativo.
+File principali: index.html, styles.css, data.js, engine.js, app.js, game.js, sw.js, manifest.webmanifest, cartella assets e il file nascosto .nojekyll.
 
 PUBBLICAZIONE SU NETLIFY
 1. Estrai lo ZIP.
 2. Apri https://app.netlify.com/drop e accedi al tuo account.
-3. Trascina la cartella estratta che contiene direttamente `index.html`, `app.js`, `data.js`, `styles.css` e `manifest.webmanifest`.
+3. Trascina la cartella estratta che contiene direttamente `index.html`.
 4. Attendi la pubblicazione e apri l'indirizzo HTTPS assegnato.
 5. Per gli aggiornamenti successivi, carica la nuova versione del sito e poi apri l'app online con connessione Internet.
 
 PUBBLICAZIONE SU GITHUB PAGES
 1. Crea un repository GitHub pubblico chiamato, per esempio, `guitar-studio`.
-2. Carica nel repository i file contenuti nella cartella estratta, mantenendo la struttura delle cartelle.
+2. Carica nel repository tutti i file della cartella estratta, mantenendo la struttura delle cartelle, compreso `.nojekyll` (un file vuoto: dal browser GitHub spesso non lo carica; in quel caso usa Add file > Create new file, scrivi `.nojekyll` come nome e conferma).
 3. Apri Settings > Pages.
 4. In Build and deployment scegli Deploy from a branch, branch `main` e cartella `/ (root)`, poi salva.
 5. Quando GitHub termina la pubblicazione, apri l'indirizzo indicato nelle impostazioni Pages.
@@ -21,26 +22,24 @@ INSTALLAZIONE SU CHROMEBOOK O ANDROID
 1. Apri in Chrome l'indirizzo HTTPS pubblicato.
 2. Attendi il caricamento iniziale completo.
 3. Dal menu di Chrome scegli Installa app o Aggiungi a schermata Home.
-4. Per l'accordatore, consenti l'accesso al microfono.
+4. Per l'accordatore e per le Sfide, consenti l'accesso al microfono.
 
-USO DELL'ACCORDATORE SU IPHONE
-1. Apri l'indirizzo HTTPS in Safari e tocca “Avvia microfono”.
+USO DEL MICROFONO SU IPHONE
+1. Apri l'indirizzo HTTPS in Safari e tocca “Avvia microfono” (accordatore) oppure avvia una Sfida.
 2. Quando iOS lo chiede, consenti l'accesso al microfono.
 3. Se il permesso era stato negato, apri Impostazioni iPhone > Safari > Microfono e consenti l'accesso; poi ricarica la pagina.
 
-AGGIORNAMENTI E CACHE OFFLINE
-La versione 1.11.1 usa la cache `guitar-studio-v1-11-1`. Dopo un aggiornamento, apri l'app online e premi “Controlla aggiornamenti” nella schermata iniziale. Una volta scaricati i file, riavvia l'app se richiesto. Dopo il primo caricamento completo, lezioni, accordi e strumenti restano disponibili offline; l’accordatore richiede il permesso del microfono.
+SFIDE (NOVITÀ 2.0)
+Le Sfide usano il microfono per riconoscere le note e gli accordi che suoni: Autostrada, Caccia alla nota, Eco e Cambi lampo. Consigli: stanza silenziosa, telefono a 30-50 cm dalla chitarra, cuffie per sentire i suoni dell'app senza disturbare il microfono. Dalla schermata Sfide puoi provare il microfono, calibrare il ritardo e regolare la sensibilità. L'audio è analizzato sul dispositivo e non viene registrato né inviato. Senza chitarra puoi giocare toccando lo schermo.
 
-NOVITÀ DIDATTICHE
-Le lezioni sono state estese a 23 unità progressive. Il percorso degli accordi comprende 12 tappe, dalle forme aperte al barrè, alle variazioni armoniche e alle mappe mobili. Gli esercizi sono 24 e sviluppano coordinazione, ritmo, lettura, arpeggi e cambi di accordo. La schermata Teoria musicale tratta note e alterazioni, tastiera, scale, tonalità, triadi, misure, pentagramma e un metodo per passare dalla spiegazione alla pratica.
+AGGIORNAMENTI E CACHE OFFLINE
+La versione 2.0.0 usa la cache `guitar-studio-v2-0-0`. Dopo un aggiornamento, apri l'app online e premi “Controlla aggiornamenti” nella schermata iniziale. Una volta scaricati i file, riavvia l'app se richiesto. Dopo il primo caricamento completo, lezioni, accordi e strumenti restano disponibili offline; accordatore e Sfide richiedono il permesso del microfono.
+
+CONTENUTI DIDATTICI
+23 lezioni progressive, 12 tappe del percorso accordi, 24 esercizi e una sezione di teoria musicale illustrata (note e alterazioni, tastiera, scale, tonalità, triadi, misure, pentagramma e tablatura).
 
 DATI PERSONALI
-Diario e progressi sono conservati localmente nel browser e non vengono inviati all'hosting. Prima di cambiare hosting o indirizzo, salva un backup dalla schermata iniziale e ripristinalo dopo aver aperto la nuova versione.
+Diario, progressi e risultati delle Sfide sono conservati localmente nel browser e non vengono inviati all'hosting. Prima di cambiare hosting o indirizzo, salva un backup dalla schermata iniziale e ripristinalo dopo aver aperto la nuova versione.
 
 SEZIONE CANZONI
-La voce Canzoni è presente nei menu e mostra “Work in progress”.
-
-Aggiornamento 1.11.1: lezioni ed esercizi ampliati, accordi apribili nelle lezioni, metronomo locale nelle attività, percorso accordi esteso, note bilingui e meccaniche accordatore riordinate.
-
-INTERFACCIA E TEORIA
-Il percorso accordi mostra le tappe in righe compatte: seleziona una riga per aprire obiettivi, accordi, cambi ed esercizi. La tabella delle note elenca tutte e sette le note naturali in colonne Italiano, Internazionale e Pronuncia.
+La voce Canzoni (raggiungibile dalla home) mostra “Work in progress”.

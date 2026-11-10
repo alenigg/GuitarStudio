@@ -20,6 +20,7 @@
       <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></symbol>
       <symbol id="i-studio" viewBox="0 0 24 24"><path d="M5 4a2 2 0 0 1 2-2h12v15H7a2 2 0 0 0-2 2zm0 15a2 2 0 0 0 2 2h12"/></symbol>
       <symbol id="i-tools" viewBox="0 0 24 24"><path d="M4 7h8m4 0h4M4 17h4m4 0h8"/><circle cx="14" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></symbol>
+      <symbol id="i-game" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/></symbol>
       <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></symbol>
       <symbol id="i-diary" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
       <symbol id="i-lessons" viewBox="0 0 24 24"><path d="M12 3 2 8l10 5 10-5zM6 11v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></symbol>
@@ -71,6 +72,8 @@
         <div><strong id="streakDays">0</strong><span>giorni di fila</span></div>
         <div><strong id="totalMinutes">0</strong><span>minuti totali</span></div>
       </div>
+
+      <button class="tile tile-wide" data-go="sfide"><span class="tile-ico"><svg class="ico"><use href="#i-game"/></svg></span><span class="tile-text"><b>Sfide</b><small>Giochi con il microfono: la chitarra diventa il controller</small></span><span class="badge-new">Novità</span></button>
 
       <div class="grid2">
         <button class="tile" data-go="studio"><span class="tile-ico"><svg class="ico"><use href="#i-studio"/></svg></span><b>Studio</b><small>Lezioni, accordi, teoria, esercizi</small></button>
@@ -276,6 +279,17 @@
       <p class="note">Esercitati lentamente, controlla ogni corda e aumenta il metronomo solo quando il cambio è pulito e rilassato.</p>
     </section>
 
+    <!-- SFIDE -->
+    <section id="sfide" class="view">
+      <div class="page-heading"><p class="eyebrow">Giochi con il microfono</p><h1>Sfide</h1><p class="lede">Suona la chitarra: l’app ti ascolta, ti guida e capisce se stai facendo bene.</p></div>
+      <div id="sfideHub"></div>
+    </section>
+
+    <section id="gioco" class="view">
+      <button class="back" data-go="sfide"><svg class="ico"><use href="#i-back"/></svg>Sfide</button>
+      <div id="gameStage"></div>
+    </section>
+
     <!-- CANZONI -->
     <section id="canzoni" class="view">
       <div class="page-heading"><p class="eyebrow">Canzoni</p><h1>Canzoni</h1><p class="lede">Work in progress</p><p class="muted">Questa sezione è in preparazione: i brani verranno aggiunti uno alla volta, con accordi e fonti verificati. Nel frattempo allenati con il giro di accordi della lezione 22 e il percorso accordi.</p></div>
@@ -329,7 +343,7 @@
     <button class="nav-item active" data-go="home"><svg class="ico"><use href="#i-home"/></svg><small>Home</small></button>
     <button class="nav-item" data-go="studio"><svg class="ico"><use href="#i-studio"/></svg><small>Studio</small></button>
     <button class="nav-item" data-go="strumenti"><svg class="ico"><use href="#i-tools"/></svg><small>Strumenti</small></button>
-    <button class="nav-item" data-go="canzoni"><svg class="ico"><use href="#i-music"/></svg><small>Canzoni</small></button>
+    <button class="nav-item" data-go="sfide"><svg class="ico"><use href="#i-game"/></svg><small>Sfide</small></button>
     <button class="nav-item" data-go="diario"><svg class="ico"><use href="#i-diary"/></svg><small>Diario</small></button>
   </nav>
 
@@ -338,6 +352,8 @@
     <div id="lessonContent"></div>
   </dialog>
   <script src="data.js"></script>
+  <script src="engine.js"></script>
   <script src="app.js"></script>
+  <script src="game.js"></script>
 </body>
 </html>

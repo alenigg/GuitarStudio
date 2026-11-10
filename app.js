@@ -1,6 +1,6 @@
 'use strict';
-// Guitar Studio 1.11.1 — logica dell'app. I contenuti didattici sono in data.js.
-const APP_VERSION='1.12.2';
+// Guitar Studio 2.0 — logica dell'app. I contenuti didattici sono in data.js.
+const APP_VERSION='2.0.0';
 const $=id=>document.getElementById(id);
 const AudioCtor=window.AudioContext||window.webkitAudioContext;
 const pad2=n=>String(n).padStart(2,'0');
@@ -45,9 +45,10 @@ function pluckTone(ctx,midi,start,duration=2.2,velocity=.13,pan=0){
 
 /* ---------- Navigazione (con cronologia: il tasto indietro di Android funziona) ---------- */
 const views=[...document.querySelectorAll('.view')];
-const parentOf={lezioni:'studio',teoria:'studio',accordi:'studio',percorso:'studio',esercizi:'studio',accordatore:'strumenti',metronomo:'strumenti'};
+const parentOf={lezioni:'studio',teoria:'studio',accordi:'studio',percorso:'studio',esercizi:'studio',accordatore:'strumenti',metronomo:'strumenti',gioco:'sfide'};
 function show(name){
   if(!$(name)||!$(name).classList.contains('view'))name='home';
+  if(name==='gioco'&&!(window.GSGame&&GSGame.ready())){name='sfide';history.replaceState(null,'','#sfide')}
   if(name!=='metronomo')stopMetro();
   if(name!=='accordatore')stopTuner();
   stopInlineMetronome();
@@ -55,6 +56,7 @@ function show(name){
   const tab=parentOf[name]||name;
   document.querySelectorAll('.nav-item').forEach(b=>{const on=b.dataset.go===tab;b.classList.toggle('active',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
   window.scrollTo(0,0);
+  if(window.GSGame)GSGame.onView(name);
 }
 function go(name){if(location.hash==='#'+name)show(name);else location.hash=name}
 window.addEventListener('hashchange',()=>show(location.hash.slice(1)||'home'));
@@ -242,7 +244,7 @@ function download(name,text,type){const a=document.createElement('a');a.href=URL
 
 /* ---------- Backup completo ---------- */
 $('backupExport').addEventListener('click',()=>{
-  const data={app:'guitar-studio',version:APP_VERSION,date:new Date().toISOString(),sessions,pathDone:loadJSON(KEY_PATH,[]),done:loadJSON(KEY_DONE,[]),weeklyGoal};
+  const data={app:'guitar-studio',version:APP_VERSION,date:new Date().toISOString(),sessions,pathDone:loadJSON(KEY_PATH,[]),done:loadJSON(KEY_DONE,[]),weeklyGoal,game:loadJSON('guitarStudioGameV1',null)};
   download(`guitar-studio-backup-${isoLocal()}.json`,JSON.stringify(data,null,1),'application/json');
   $('backupMsg').textContent='Backup salvato nei download del dispositivo.';
 });
@@ -256,6 +258,7 @@ $('backupImport').addEventListener('change',async e=>{
     saveJSON(KEY_SESSIONS,sessions);saveJSON(KEY_PATH,Array.isArray(d.pathDone)?d.pathDone:[]);
     if(Array.isArray(d.done))saveJSON(KEY_DONE,d.done.map(String));
     if(d.weeklyGoal){weeklyGoal=Number(d.weeklyGoal)||60;saveJSON(KEY_GOAL,weeklyGoal)}
+    if(d.game&&typeof d.game==='object'&&!Array.isArray(d.game)){saveJSON('guitarStudioGameV1',d.game);if(window.GSGame)GSGame.test.G=Object.assign({xp:0,best:{},weak:{},missions:{},minutes:{},logged:{},plays:0},d.game)}
     renderDiary();renderChordPath();refreshDoneMarks();$('backupMsg').textContent='Backup ripristinato.';
   }catch(err){$('backupMsg').textContent='File non valido: scegli un backup creato da Guitar Studio.'}
 });
@@ -401,7 +404,7 @@ function stopTuner(){
   $('tunerStart').textContent='Avvia microfono';$('tunerStatus').textContent='Accordatore fermo';tunerIdle();
 }
 $('tunerStart').addEventListener('click',startTuner);
-document.addEventListener('visibilitychange',()=>{if(document.hidden){stopTuner();stopMetro()}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){stopTuner();stopMetro();if(window.GSGame)GSGame.interrupt()}});
 
 /* ---------- Installazione e aggiornamenti PWA ---------- */
 $('appVersion').textContent=APP_VERSION;refreshDoneMarks();
