@@ -1,4 +1,4 @@
-GUITAR STUDIO PWA 1.10.2 — PUBBLICAZIONE E INSTALLAZIONE
+GUITAR STUDIO PWA 1.11 — PUBBLICAZIONE E INSTALLAZIONE
 
 Questa cartella contiene un sito statico pronto per un hosting HTTPS. Non richiede un server applicativo.
 
@@ -29,7 +29,7 @@ USO DELL'ACCORDATORE SU IPHONE
 3. Se il permesso era stato negato, apri Impostazioni iPhone > Safari > Microfono e consenti l'accesso; poi ricarica la pagina.
 
 AGGIORNAMENTI E CACHE OFFLINE
-La versione 1.10.2 usa la cache `guitar-studio-v1-10-2`. Dopo un aggiornamento, apri l'app online e premi “Controlla aggiornamenti” nella schermata iniziale. Una volta scaricati i file, riavvia l'app se richiesto. Dopo il primo caricamento completo, lezioni, accordi e strumenti restano disponibili offline; l’accordatore richiede il permesso del microfono.
+La versione 1.11 usa la cache `guitar-studio-v1-11`. Dopo un aggiornamento, apri l'app online e premi “Controlla aggiornamenti” nella schermata iniziale. Una volta scaricati i file, riavvia l'app se richiesto. Dopo il primo caricamento completo, lezioni, accordi e strumenti restano disponibili offline; l’accordatore richiede il permesso del microfono.
 
 NOVITÀ DIDATTICHE
 Le lezioni sono state estese a 16 unità progressive. Il percorso degli accordi comprende 7 tappe, dalle forme aperte al barrè, alle variazioni armoniche e alle mappe mobili. Gli esercizi sono 18 e sviluppano coordinazione, ritmo, lettura, arpeggi e cambi di accordo. La schermata Teoria musicale tratta note e alterazioni, tastiera, scale, tonalità, triadi, misure, pentagramma e un metodo per passare dalla spiegazione alla pratica.
@@ -39,3 +39,5 @@ Diario e progressi sono conservati localmente nel browser e non vengono inviati 
 
 SEZIONE CANZONI
 La voce Canzoni è presente nei menu e mostra “Work in progress”.
+
+Aggiornamento 1.11: lezioni ed esercizi ampliati, accordi apribili nelle lezioni, metronomo locale nelle attività, percorso accordi esteso, note bilingui e meccaniche accordatore riordinate.

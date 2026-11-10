@@ -240,7 +240,7 @@ input[type=range]{padding:0;min-height:0;border:0;background:none;accent-color:v
 .hs-mid{stroke:var(--line2);stroke-width:2;fill:none}
 .tuner-pin line{stroke:var(--line2);stroke-width:5}
 .tuner-pin circle{fill:var(--surface);stroke:var(--line2);stroke-width:3}
-.tuner-pin text{fill:var(--ink2);font:600 11px var(--sans)}
+.tuner-pin text{fill:var(--ink2);font:600 7px var(--sans)}
 .tuner-pin.selected line{stroke:var(--accent)}
 .tuner-pin.selected circle{fill:var(--accent);stroke:var(--accent)}
 .tuner-pin.selected text{fill:var(--accent-ink)}
@@ -285,3 +285,20 @@ input[type=range]{padding:0;min-height:0;border:0;background:none;accent-color:v
   .song-toolbar .btn-row .btn{flex:1}
   .brand-name{font-size:19px}
 }
+
+
+/* Controlli rapidi per lezioni e sessioni del percorso */
+.lesson-chord-links{border-top:1px solid var(--line);margin-top:22px;padding-top:8px}
+.lesson-chord-links h3{margin:10px 0}
+.inline-metronome{background:var(--surface2);border-radius:12px;padding:14px;margin:16px 0;text-align:left}
+.inline-metro-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.inline-bpm{display:flex;align-items:center;gap:8px;font-weight:700;font-variant-numeric:tabular-nums}
+.inline-bpm output{min-width:65px;text-align:center}
+.inline-beats{display:flex;justify-content:center;gap:14px;margin:13px auto}
+.inline-beats i{width:12px;height:12px;border-radius:50%;background:var(--line2);display:block}
+.inline-beats i.accent{background:var(--accent);opacity:.7}
+.inline-beats i.on{background:var(--good);transform:scale(1.3)}
+.inline-metronome .full{width:100%}
+.path-practice{padding-left:22px;margin:10px 0 0;color:var(--ink2)}
+.path-practice li{font-size:14px;line-height:1.6;margin:7px 0}
+.chord-fret-label{fill:var(--muted);font:600 9px var(--sans)}

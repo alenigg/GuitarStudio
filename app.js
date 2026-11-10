@@ -1,6 +1,6 @@
 'use strict';
-// Guitar Studio 1.10.2 — logica dell'app. I contenuti didattici sono in data.js.
-const APP_VERSION='1.10.2';
+// Guitar Studio 1.11 — logica dell'app. I contenuti didattici sono in data.js.
+const APP_VERSION='1.11';
 const $=id=>document.getElementById(id);
 const AudioCtor=window.AudioContext||window.webkitAudioContext;
 const pad2=n=>String(n).padStart(2,'0');
@@ -50,6 +50,7 @@ function show(name){
   if(!$(name)||!$(name).classList.contains('view'))name='home';
   if(name!=='metronomo')stopMetro();
   if(name!=='accordatore')stopTuner();
+  stopInlineMetronome();
   views.forEach(v=>v.classList.toggle('active',v.id===name));
   const tab=parentOf[name]||name;
   document.querySelectorAll('.nav-item').forEach(b=>{const on=b.dataset.go===tab;b.classList.toggle('active',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
@@ -66,37 +67,57 @@ $('themeBtn').addEventListener('click',()=>{const next=effectiveTheme()==='dark'
 paintThemeBtn();
 
 /* ---------- Finestra di dettaglio ---------- */
-function openDialog(eyebrow,html){$('dialogEyebrow').textContent=eyebrow;$('lessonContent').innerHTML=html;$('lessonDialog').showModal()}
-$('closeLesson').addEventListener('click',()=>$('lessonDialog').close());
-$('lessonDialog').addEventListener('click',e=>{if(e.target===$('lessonDialog'))$('lessonDialog').close()});
+const dialogHistory=[];
+function openDialog(eyebrow,html,{keepCurrent=false,chords=[],bpm=0}={}){
+  stopInlineMetronome();
+  const dialog=$('lessonDialog');
+  if(dialog.open&&keepCurrent)dialogHistory.push({eyebrow:$('dialogEyebrow').textContent,html:$('lessonContent').innerHTML});
+  else if(!dialog.open)dialogHistory.length=0;
+  $('dialogEyebrow').textContent=eyebrow;
+  $('lessonContent').innerHTML=html;
+  if(chords.length)$('lessonContent').insertAdjacentHTML('beforeend',`<div class="lesson-chord-links"><h3>Apri gli accordi citati</h3><div class="btn-row">${chords.map(n=>{const c=chordByName(n);return c?`<button type="button" class="btn small secondary" data-open-chord="${esc(c.name)}">${esc(chordLabel(c))}</button>`:''}).join('')}</div></div>`);
+  if(bpm)$('lessonContent').insertAdjacentHTML('beforeend',inlineMetronomeMarkup('lesson',bpm));
+  bindInteractiveContent($('lessonContent'));
+  if(!dialog.open)dialog.showModal();
+}
+function closeDialogLayer(){
+  stopInlineMetronome();
+  if(dialogHistory.length){const previous=dialogHistory.pop();$('dialogEyebrow').textContent=previous.eyebrow;$('lessonContent').innerHTML=previous.html;bindInteractiveContent($('lessonContent'));return}
+  $('lessonDialog').close();
+}
+$('closeLesson').addEventListener('click',closeDialogLayer);
+$('lessonDialog').addEventListener('click',e=>{if(e.target===$('lessonDialog'))closeDialogLayer()});
 
 /* ---------- Lezioni ed esercizi ---------- */
 function rowButton(num,title,sub){const b=document.createElement('button');b.className='row';b.innerHTML=`<span class="row-ico">${num}</span><span class="row-body"><b>${title}</b><small>${sub}</small></span>${ico('next','chev')}`;return b}
-lessons.forEach(l=>{const b=rowButton(l.n,l.title,`${l.sub} · ${l.time}`);b.addEventListener('click',()=>openDialog('Lezione',`<h2>${l.n} · ${l.title}</h2><p class="muted">${l.sub} · ${l.time}</p>${l.body}`));$('lessonList').appendChild(b)});
-exerciseData.forEach(ex=>{const b=rowButton(ex.n,ex.title,ex.level);b.addEventListener('click',()=>openDialog('Esercizio',`<h2>${ex.n} · ${ex.title}</h2><p class="muted">${ex.level}</p><p>${ex.body}</p><div class="exercise"><b>Sequenza</b><p class="exercise-pattern">${ex.pattern}</p></div><p>Esegui il movimento senza tensioni: la precisione viene prima della velocità.</p>`));$('exerciseList').appendChild(b)});
+lessons.forEach(l=>{const b=rowButton(l.n,l.title,`${l.sub} · ${l.time}`);b.addEventListener('click',()=>openDialog('Lezione',`<h2>${l.n} · ${l.title}</h2><p class="muted">${l.sub} · ${l.time}</p>${l.body}`,{chords:lessonChordRefs[l.n]||[],bpm:l.bpm||(l.body.toLowerCase().includes('metronomo')?60:0)}));$('lessonList').appendChild(b)});
+exerciseData.forEach(ex=>{const b=rowButton(ex.n,ex.title,ex.level);b.addEventListener('click',()=>openDialog('Esercizio',`<h2>${ex.n} · ${ex.title}</h2><p class="muted">${ex.level}</p><p>${ex.body}</p><div class="exercise"><b>Sequenza da provare</b><p class="exercise-pattern">${ex.pattern}</p><h3>Procedura</h3><ol><li>Prepara la posizione e suona lentamente una volta per prendere confidenza.</li><li>Ripeti la sequenza per quattro cicli, controllando che ogni movimento sia preciso.</li><li>Fai una breve pausa, poi riparti e confronta la regolarità del suono.</li><li>Concludi con un ciclo lento e pulito, senza accelerare per finire prima.</li></ol><p><b>Obiettivo:</b> completare tre cicli consecutivi senza fermarti e senza tensione.</p></div>`,{chords:ex.chords||[],bpm:ex.bpm||0}));$('exerciseList').appendChild(b)});
 
 /* ---------- Accordi ---------- */
 const NOTE_INT=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];
 const NOTE_IT=['DO','DO♯','RE','RE♯','MI','FA','FA♯','SOL','SOL♯','LA','LA♯','SI'];
 const OPEN=[40,45,50,55,59,64]; // accordatura standard E A D G B e
 const chordByName=n=>chordData.find(c=>c.name.toLowerCase()===String(n).trim().toLowerCase());
+const chordLabel=c=>`${c.desc.replace(/\s+·\s+barrè$/,'')} (${c.name})`;
+const chordLabelByName=n=>{const c=chordByName(n);return c?chordLabel(c):String(n)};
 function chordNotes(ch){
   return ch.frets.map((f,i)=>f<0?null:OPEN[i]+f).filter(n=>n!==null).map(midi=>({midi,intl:NOTE_INT[midi%12],italian:NOTE_IT[midi%12],octave:Math.floor(midi/12)-1}));
 }
 function chordSVG(ch){
-  const x0=24,xg=28,y0=35,yg=25,w=190,h=150;
-  let s=`<svg class="chord-diagram" viewBox="0 0 ${w} ${h}" role="img" aria-label="Diagramma dell'accordo ${esc(ch.name)}">`;
+  const x0=24,xg=28,y0=35,yg=25,w=190,h=150,base=ch.base||1;
+  let s=`<svg class="chord-diagram" viewBox="0 0 ${w} ${h}" role="img" aria-label="Diagramma: ${esc(chordLabel(ch))}">`;
   for(let i=0;i<6;i++){const x=x0+i*xg;s+=`<line class="cd-string" x1="${x}" y1="${y0}" x2="${x}" y2="${y0+4*yg}" style="stroke-width:${i===0?2.6:1.4}"/>`;
     const f=ch.frets[i];if(f<=0)s+=`<text class="chord-open" x="${x}" y="22" text-anchor="middle">${f<0?'×':'○'}</text>`}
+  if(base>1)s+=`<text class="chord-fret-label" x="5" y="${y0+14}">${base}°</text>`;
   for(let j=0;j<=4;j++){const y=y0+j*yg;s+=`<line class="${j===0?'cd-nut':'cd-line'}" x1="${x0}" y1="${y}" x2="${x0+5*xg}" y2="${y}"/>`}
-  ch.frets.forEach((f,i)=>{if(f>0){const x=x0+i*xg,y=y0+(f-.5)*yg;s+=`<circle class="cd-dot" cx="${x}" cy="${y}" r="9"/><text class="cd-num" x="${x}" y="${y+4}" text-anchor="middle">${ch.fingers[i]||''}</text>`}});
+  ch.frets.forEach((f,i)=>{if(f>0){const x=x0+i*xg,y=y0+(f-base+.5)*yg;s+=`<circle class="cd-dot" cx="${x}" cy="${y}" r="9"/><text class="cd-num" x="${x}" y="${y+4}" text-anchor="middle">${ch.fingers[i]||''}</text>`}});
   return s+'</svg>';
 }
 function renderChords(filter='tutti'){
   const host=$('chordGrid');host.innerHTML='';
   chordData.filter(c=>filter==='tutti'||c.type===filter).forEach(ch=>{
     const card=document.createElement('button');card.className='chord-card';
-    card.innerHTML=`<div class="chord-card-head"><div><h3>${esc(ch.name)}</h3><small>${esc(ch.desc)}</small></div></div>${chordSVG(ch)}<div class="chord-strings"><span>6ª</span><span>5ª</span><span>4ª</span><span>3ª</span><span>2ª</span><span>1ª</span></div>`;
+    card.innerHTML=`<div class="chord-card-head"><div><h3>${esc(chordLabel(ch))}</h3><small>${esc(ch.desc)}</small></div></div>${chordSVG(ch)}<div class="chord-strings"><span>6ª</span><span>5ª</span><span>4ª</span><span>3ª</span><span>2ª</span><span>1ª</span></div>`;
     card.addEventListener('click',()=>openChordDetail(ch));host.appendChild(card);
   });
 }
@@ -107,21 +128,48 @@ async function playChord(ch,arpeggio=false){
   const now=ctx.currentTime+.03;
   chordNotes(ch).forEach((n,i)=>pluckTone(ctx,n.midi,now+(arpeggio?i*.115:i*.012),2.0,.105,(i-2.5)*.11));
 }
-function openChordDetail(ch){
+function openChordDetail(ch,keepCurrent=false){
   const notes=chordNotes(ch);
-  openDialog('Scheda accordo',`<h2>${esc(ch.name)} — ${esc(ch.desc)}</h2>
+  openDialog('Scheda accordo',`<h2>${esc(chordLabel(ch))}</h2>
    <div class="chord-detail-diagram">${chordSVG(ch)}</div>
    <h3>Note dell'accordo</h3>
-   <div class="chord-note-list">${notes.map(n=>`<span class="chord-note"><b>${n.italian}</b><small>${n.intl}${n.octave}</small></span>`).join('')}</div>
-   <p>Dalla corda più grave alla più acuta: <b>${notes.map(n=>n.italian).join(' · ')}</b>. Le note possono ripetersi su ottave diverse.</p>
+   <div class="chord-note-list">${notes.map(n=>`<span class="chord-note"><b>${n.italian} (${n.intl})</b><small>ottava ${n.octave}</small></span>`).join('')}</div>
+   <p>Dalla corda più grave alla più acuta: <b>${notes.map(n=>`${n.italian} (${n.intl})`).join(' · ')}</b>. Le note possono ripetersi su ottave diverse.</p>
    <div class="chord-audio-actions"><button class="btn" id="playChord">${ico('play')}<span>Ascolta accordo</span></button><button class="btn secondary" id="playArpeggio"><span>Ascolta arpeggio</span></button></div>
-   <p class="small-text muted">Suono sintetizzato per riconoscere l'armonia: non è una registrazione di chitarra reale.</p>`);
+   <p class="small-text muted">Suono sintetizzato per riconoscere l'armonia: non è una registrazione di chitarra reale.</p>`,{keepCurrent});
   $('playChord').addEventListener('click',()=>playChord(ch,false));
   $('playArpeggio').addEventListener('click',()=>playChord(ch,true));
 }
 
+function inlineMetronomeMarkup(id,bpm=60){
+  const value=Math.max(40,Math.min(220,Number(bpm)||60));
+  return `<div class="inline-metronome" data-inline-metro="${esc(id)}" data-bpm="${value}"><div class="inline-metro-head"><b>Prova con il metronomo</b><span class="inline-bpm"><button type="button" class="round-btn" data-inline-step="-5" aria-label="Diminuisci il tempo">−</button><output>${value} BPM</output><button type="button" class="round-btn" data-inline-step="5" aria-label="Aumenta il tempo">+</button></span></div><div class="inline-beats" aria-hidden="true">${[0,1,2,3].map((_,i)=>`<i class="${i===0?'accent':''}"></i>`).join('')}</div><button type="button" class="btn small full" data-inline-toggle>${ico('play')}<span>Avvia</span></button><p class="small-text muted" data-inline-status aria-live="polite">Regola il tempo e avvia quando sei pronto.</p></div>`;
+}
+function bindInteractiveContent(root){
+  root.querySelectorAll('[data-open-chord]').forEach(button=>button.addEventListener('click',()=>{const chord=chordByName(button.dataset.openChord);if(chord)openChordDetail(chord,true)}));
+  root.querySelectorAll('.inline-metronome').forEach(box=>{
+    box.querySelectorAll('[data-inline-step]').forEach(button=>button.addEventListener('click',()=>{
+      const bpm=Math.max(40,Math.min(220,(Number(box.dataset.bpm)||60)+Number(button.dataset.inlineStep)));
+      box.dataset.bpm=bpm;box.querySelector('output').textContent=`${bpm} BPM`;
+    }));
+    box.querySelector('[data-inline-toggle]').addEventListener('click',()=>toggleInlineMetronome(box));
+  });
+}
+const inlineMetro={running:false,box:null,ctx:null,timer:null,raf:null,next:0,index:0,queue:[]};
+async function toggleInlineMetronome(box){
+  if(inlineMetro.running){stopInlineMetronome();return}
+  const ctx=await getCtx();if(!ctx){box.querySelector('[data-inline-status]').textContent='Audio non disponibile in questo browser.';return}
+  inlineMetro.running=true;inlineMetro.box=box;inlineMetro.ctx=ctx;inlineMetro.index=0;inlineMetro.queue=[];inlineMetro.next=ctx.currentTime+.05;
+  box.querySelector('[data-inline-toggle]').innerHTML=`${ico('pause')}<span>Ferma</span>`;box.querySelector('[data-inline-status]').textContent='Metronomo attivo';
+  const tick=()=>{if(!inlineMetro.running)return;while(inlineMetro.next<ctx.currentTime+.12){clickSound(ctx,inlineMetro.next,inlineMetro.index%4===0?2:0);inlineMetro.queue.push({t:inlineMetro.next,i:inlineMetro.index%4});inlineMetro.next+=60/(Number(box.dataset.bpm)||60);inlineMetro.index++}inlineMetro.timer=setTimeout(tick,25)};
+  const frame=()=>{if(!inlineMetro.running)return;let last=null;while(inlineMetro.queue.length&&inlineMetro.queue[0].t<=ctx.currentTime)last=inlineMetro.queue.shift();if(last&&inlineMetro.box===box)box.querySelectorAll('.inline-beats i').forEach((el,i)=>el.classList.toggle('on',i===last.i));inlineMetro.raf=requestAnimationFrame(frame)};
+  tick();frame();
+}
+function stopInlineMetronome(){if(!inlineMetro?.running)return;inlineMetro.running=false;clearTimeout(inlineMetro.timer);cancelAnimationFrame(inlineMetro.raf);if(inlineMetro.box){inlineMetro.box.querySelectorAll('.inline-beats i').forEach(x=>x.classList.remove('on'));inlineMetro.box.querySelector('[data-inline-toggle]').innerHTML=`${ico('play')}<span>Avvia</span>`;inlineMetro.box.querySelector('[data-inline-status]').textContent='Metronomo fermato.'}inlineMetro.box=null;inlineMetro.queue=[]}
+
 /* ---------- Percorso accordi ---------- */
 function renderChordPath(){
+  stopInlineMetronome();
   const done=loadJSON(KEY_PATH,[]);
   $('pathProgressText').textContent=`${done.length} di ${chordPathStages.length} tappe completate`;
   $('pathProgressBar').style.width=`${done.length/chordPathStages.length*100}%`;
@@ -130,11 +178,12 @@ function renderChordPath(){
     const card=document.createElement('article');card.className='path-stage';
     card.innerHTML=`<div class="path-stage-head"><span class="path-stage-number">${i+1}</span><div class="path-stage-title"><span class="eyebrow">${st.level} · ${st.time}</span><h2>${st.title}</h2></div><label class="path-complete"><input type="checkbox" ${done.includes(i)?'checked':''} aria-label="Tappa ${i+1} completata"><span>Completata</span></label></div>
      <p>${st.goal}</p>
-     <div class="path-chords"><span class="path-label">Accordi da studiare</span><div class="path-chord-buttons">${st.chords.map(n=>`<button class="path-chord-btn" data-chord="${n}">${n}</button>`).join('')}</div></div>
-     <div class="path-pairs"><span class="path-label">Cambi da allenare</span><div>${st.pairs.map(p=>`<span class="path-pair">${p[0]} <b>↔</b> ${p[1]}</span>`).join('')}</div></div>
-     <div class="path-drill"><b>Mini-sessione guidata</b><p>${st.drill}</p></div>`;
+     <div class="path-chords"><span class="path-label">Accordi da studiare</span><div class="path-chord-buttons">${st.chords.map(n=>`<button class="path-chord-btn" data-chord="${n}">${chordLabelByName(n)}</button>`).join('')}</div></div>
+     <div class="path-pairs"><span class="path-label">Cambi da allenare</span><div>${st.pairs.map(p=>`<span class="path-pair">${chordLabelByName(p[0])} <b>↔</b> ${chordLabelByName(p[1])}</span>`).join('')}</div></div>
+     <div class="path-drill"><b>Mini-sessione guidata</b><p>${st.drill}</p>${st.practice?`<ol class="path-practice">${st.practice.map(x=>`<li>${x}</li>`).join('')}</ol>`:''}</div>${st.bpm?inlineMetronomeMarkup(`path-${i}`,st.bpm):''}`;
     card.querySelector('input').addEventListener('change',e=>{const next=loadJSON(KEY_PATH,[]).filter(x=>x!==i);if(e.target.checked)next.push(i);saveJSON(KEY_PATH,next);renderChordPath()});
     card.querySelectorAll('[data-chord]').forEach(b=>b.addEventListener('click',()=>{const c=chordByName(b.dataset.chord);if(c)openChordDetail(c)}));
+    bindInteractiveContent(card);
     host.appendChild(card);
   });
 }
@@ -251,17 +300,20 @@ const guitarStrings=[{n:'E2',f:82.4069},{n:'A2',f:110},{n:'D3',f:146.832},{n:'G3
 const tuner={running:false,starting:false,token:0,stream:null,ctx:null,raf:null,recent:[],lastHit:0,frame:0};
 (function buildPins(){
   const ns='http://www.w3.org/2000/svg',host=$('tunerPins');
-  for(let i=0;i<6;i++){
-    const side=i%2===0?-1:1,y=42+Math.floor(i/2)*43,x=170+side*57;
+  const visualOrder=[2,3,1,4,0,5];
+  for(let pos=0;pos<visualOrder.length;pos++){
+    const i=visualOrder[pos],side=pos%2===0?-1:1,y=42+Math.floor(pos/2)*43,x=170+side*57;
     const g=document.createElementNS(ns,'g');g.setAttribute('class','tuner-pin');
+    g.dataset.stringIndex=i;
     const mk=(tag,attrs,text)=>{const e=document.createElementNS(ns,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(text)e.textContent=text;return e};
-    g.append(mk('line',{x1:170+side*32,y1:y,x2:x,y2:y}),mk('circle',{cx:x,cy:y,r:12}),mk('text',{x,y:y+4,'text-anchor':'middle'},['E','A','D','G','B','e'][i]));
+    const names=['MI (E)','LA (A)','RE (D)','SOL (G)','SI (B)','MI (E)'];
+    g.append(mk('line',{x1:170+side*32,y1:y,x2:x,y2:y}),mk('circle',{cx:x,cy:y,r:15}),mk('text',{x,y:y+3,'text-anchor':'middle','font-size':'7'},names[i]));
     host.appendChild(g);
   }
 })();
 function highlightTunerString(index){
-  document.querySelectorAll('.tuner-pin').forEach((p,i)=>p.classList.toggle('selected',i===index));
-  $('headstockCaption').textContent=index>=0?`Meccanica evidenziata: ${['MI grave','LA','RE','SOL','SI','MI cantino'][index]}`:'Suona una corda per evidenziarne la meccanica';
+  document.querySelectorAll('.tuner-pin').forEach(p=>p.classList.toggle('selected',Number(p.dataset.stringIndex)===index));
+  $('headstockCaption').textContent=index>=0?`Meccanica evidenziata: ${['MI (E) grave','LA (A)','RE (D)','SOL (G)','SI (B)','MI (E) cantino'][index]}`:'Suona una corda per evidenziarne la meccanica';
 }
 function detectPitch(buf,sr){
   let rms=0;for(let i=0;i<buf.length;i++)rms+=buf[i]*buf[i];rms=Math.sqrt(rms/buf.length);if(rms<.01)return -1;
@@ -313,8 +365,8 @@ async function startTuner(){
           tuner.lastHit=performance.now();tuner.recent.push(f);if(tuner.recent.length>5)tuner.recent.shift();
           const med=tuner.recent.slice().sort((a,b)=>a-b)[Math.floor(tuner.recent.length/2)];
           const st=nearestString(med),cents=1200*Math.log2(med/st.f);
-          $('noteName').textContent=st.n;$('frequency').textContent=med.toFixed(1)+' Hz';
-          $('cents').textContent=(cents>0?'+':'')+cents.toFixed(0)+' cent';$('stringName').textContent='Corda '+st.n;highlightTunerString(guitarStrings.indexOf(st));
+          const noteIdx=Math.round(12*Math.log2(med/440)+69)%12;$('noteName').textContent=`${NOTE_IT[noteIdx]} (${NOTE_INT[noteIdx]})`;$('frequency').textContent=med.toFixed(1)+' Hz';
+          $('cents').textContent=(cents>0?'+':'')+cents.toFixed(0)+' cent';$('stringName').textContent='Corda '+['MI (E)','LA (A)','RE (D)','SOL (G)','SI (B)','MI (E)'][guitarStrings.indexOf(st)];highlightTunerString(guitarStrings.indexOf(st));
           $('needle').style.transform=`rotate(${Math.max(-42,Math.min(42,cents*1.25))}deg)`;$('needle').classList.toggle('ok',Math.abs(cents)<5);
           $('tunerStatus').textContent=Math.abs(cents)<5?'Accordata ✓':cents<0?'Troppo bassa · tendi leggermente':'Troppo alta · allenta leggermente';
         }else if(performance.now()-tuner.lastHit>700){tuner.recent=[];tunerIdle();$('tunerStatus').textContent='Ascolto in corso…'}
