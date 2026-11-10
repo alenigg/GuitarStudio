@@ -1,4 +1,4 @@
-# Guitar Studio PWA 1.12.1
+# Guitar Studio PWA 1.12.2
 
 Applicazione statica per lo studio della chitarra. Dopo il primo caricamento, le funzioni principali sono disponibili offline.
 
@@ -14,11 +14,15 @@ Applicazione statica per lo studio della chitarra. Dopo il primo caricamento, le
 ## Pubblicazione
 Estrai lo ZIP e pubblica il contenuto della cartella su un hosting HTTPS statico, per esempio Netlify o GitHub Pages. Le istruzioni passo passo sono in `ISTRUZIONI_PUBBLICAZIONE_HTTPS.txt`.
 
-La cache del service worker per questa versione è `guitar-studio-v1-12-1`.
+La cache del service worker per questa versione è `guitar-studio-v1-12-2`.
 
 ## Dati e privacy
 Il diario e i progressi vengono salvati nel browser del dispositivo. Usa “Salva backup” prima di cambiare indirizzo del sito, browser o dispositivo; usa “Ripristina backup” per recuperare i dati.
 
+
+## Novità 1.12.2
+
+- Corretto il pulsante «Controlla aggiornamenti»: se i nuovi file sono ancora in download mostra «Scarico l'aggiornamento…» invece di «è aggiornato» e poi propone il riavvio; senza connessione indica «Sei offline».
 
 ## Novità 1.12.1
 

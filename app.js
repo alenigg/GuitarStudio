@@ -1,6 +1,6 @@
 'use strict';
 // Guitar Studio 1.11.1 — logica dell'app. I contenuti didattici sono in data.js.
-const APP_VERSION='1.12.1';
+const APP_VERSION='1.12.2';
 const $=id=>document.getElementById(id);
 const AudioCtor=window.AudioContext||window.webkitAudioContext;
 const pad2=n=>String(n).padStart(2,'0');
@@ -423,10 +423,16 @@ if('serviceWorker' in navigator&&location.protocol!=='file:'){
 }
 updateBtn.addEventListener('click',async()=>{
   if(!appRegistration){setUpdateLabel('Aggiornamenti non disponibili qui');return}
+  if(!navigator.onLine){setUpdateLabel('Sei offline');return}
   updateBtn.disabled=true;setUpdateLabel('Controllo…');updateBtn.disabled=true;
   try{
     if(updateBtn.dataset.ready==='true'&&appRegistration.waiting){waitingForUpdate=true;appRegistration.waiting.postMessage({type:'SKIP_WAITING'});setUpdateLabel('Installazione…');updateBtn.disabled=true;return}
     await appRegistration.update();
+    const installing=appRegistration.installing;
+    if(installing&&!['installed','activated','redundant'].includes(installing.state)){
+      setUpdateLabel('Scarico l\'aggiornamento…');updateBtn.disabled=true;
+      await new Promise(done=>{const check=()=>{if(['installed','activated','redundant'].includes(installing.state)){installing.removeEventListener('statechange',check);done()}};installing.addEventListener('statechange',check);check()});
+    }
     if(appRegistration.waiting){updateBtn.dataset.ready='true';setUpdateLabel('Aggiornamento pronto · Riavvia')}
     else setUpdateLabel('Guitar Studio è aggiornato ✓');
   }catch(err){setUpdateLabel(navigator.onLine?'Errore aggiornamento':'Sei offline')}

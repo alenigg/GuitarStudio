@@ -1,4 +1,4 @@
-// Guitar Studio 1.12.1 — contenuti didattici (lezioni, accordi, esercizi, percorso).
+// Guitar Studio 1.12.2 — contenuti didattici (lezioni, accordi, esercizi, percorso).
 // Un elemento per riga. Campi opzionali: bpm (metronomo nella scheda), beats (battiti del metronomo, default 4), tab (righe di tablatura).
 'use strict';
 const lessons=[
