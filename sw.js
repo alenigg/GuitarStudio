@@ -1,4 +1,4 @@
-const CACHE='guitar-studio-v1-11';
+const CACHE='guitar-studio-v1-11-1';
 const CORE=['./','./index.html','./styles.css','./data.js','./app.js','./manifest.webmanifest','./assets/icon-192.png','./assets/icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)))});
 self.addEventListener('message',e=>{if(e.data&&e.data.type==='SKIP_WAITING')self.skipWaiting()});

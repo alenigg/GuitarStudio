@@ -1,6 +1,6 @@
 'use strict';
-// Guitar Studio 1.11 — logica dell'app. I contenuti didattici sono in data.js.
-const APP_VERSION='1.11';
+// Guitar Studio 1.11.1 — logica dell'app. I contenuti didattici sono in data.js.
+const APP_VERSION='1.11.1';
 const $=id=>document.getElementById(id);
 const AudioCtor=window.AudioContext||window.webkitAudioContext;
 const pad2=n=>String(n).padStart(2,'0');
@@ -175,15 +175,17 @@ function renderChordPath(){
   $('pathProgressBar').style.width=`${done.length/chordPathStages.length*100}%`;
   const host=$('chordPath');host.innerHTML='';
   chordPathStages.forEach((st,i)=>{
-    const card=document.createElement('article');card.className='path-stage';
-    card.innerHTML=`<div class="path-stage-head"><span class="path-stage-number">${i+1}</span><div class="path-stage-title"><span class="eyebrow">${st.level} · ${st.time}</span><h2>${st.title}</h2></div><label class="path-complete"><input type="checkbox" ${done.includes(i)?'checked':''} aria-label="Tappa ${i+1} completata"><span>Completata</span></label></div>
-     <p>${st.goal}</p>
-     <div class="path-chords"><span class="path-label">Accordi da studiare</span><div class="path-chord-buttons">${st.chords.map(n=>`<button class="path-chord-btn" data-chord="${n}">${chordLabelByName(n)}</button>`).join('')}</div></div>
-     <div class="path-pairs"><span class="path-label">Cambi da allenare</span><div>${st.pairs.map(p=>`<span class="path-pair">${chordLabelByName(p[0])} <b>↔</b> ${chordLabelByName(p[1])}</span>`).join('')}</div></div>
-     <div class="path-drill"><b>Mini-sessione guidata</b><p>${st.drill}</p>${st.practice?`<ol class="path-practice">${st.practice.map(x=>`<li>${x}</li>`).join('')}</ol>`:''}</div>${st.bpm?inlineMetronomeMarkup(`path-${i}`,st.bpm):''}`;
-    card.querySelector('input').addEventListener('change',e=>{const next=loadJSON(KEY_PATH,[]).filter(x=>x!==i);if(e.target.checked)next.push(i);saveJSON(KEY_PATH,next);renderChordPath()});
-    card.querySelectorAll('[data-chord]').forEach(b=>b.addEventListener('click',()=>{const c=chordByName(b.dataset.chord);if(c)openChordDetail(c)}));
-    bindInteractiveContent(card);
+    const card=document.createElement('article');card.className='path-row-card';
+    const button=document.createElement('button');button.type='button';button.className='row';
+    button.innerHTML=`<span class="row-ico">${String(i+1).padStart(2,'0')}</span><span class="row-body"><b>${esc(st.title)}</b><small>${esc(st.goal)}</small></span>${ico('next','chev')}`;
+    button.addEventListener('click',()=>{
+      const pairs=st.pairs.map(p=>`<span class="path-pair">${esc(chordLabelByName(p[0]))} <b>↔</b> ${esc(chordLabelByName(p[1]))}</span>`).join('');
+      const practice=st.practice?`<h3>Pratica guidata</h3><ol class="path-practice">${st.practice.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`:'';
+      openDialog('Percorso accordi',`<h2>Tappa ${i+1} · ${esc(st.title)}</h2><p class="muted">${esc(st.level)} · ${esc(st.time)}</p><p>${esc(st.goal)}</p><div class="path-pairs"><span class="path-label">Cambi da allenare</span><div>${pairs}</div></div><div class="path-drill"><b>Obiettivo della sessione</b><p>${esc(st.drill)}</p></div>${practice}`,{chords:st.chords,bpm:st.bpm||0});
+    });
+    const label=document.createElement('label');label.className='path-complete';label.innerHTML=`<input type="checkbox" ${done.includes(i)?'checked':''} aria-label="Tappa ${i+1} completata"><span>Fatta</span>`;
+    label.querySelector('input').addEventListener('change',e=>{const next=loadJSON(KEY_PATH,[]).filter(x=>x!==i);if(e.target.checked)next.push(i);saveJSON(KEY_PATH,next);renderChordPath()});
+    card.append(button,label);
     host.appendChild(card);
   });
 }
