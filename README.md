@@ -1,4 +1,4 @@
-# Guitar Studio PWA 2.2.2
+# Guitar Studio PWA 2.3.0
 
 Applicazione statica per lo studio della chitarra. Dopo il primo caricamento, le funzioni principali sono disponibili offline.
 
@@ -15,11 +15,18 @@ Applicazione statica per lo studio della chitarra. Dopo il primo caricamento, le
 ## Pubblicazione
 Estrai lo ZIP e pubblica il contenuto della cartella su un hosting HTTPS statico, per esempio Netlify o GitHub Pages. Le istruzioni passo passo sono in `ISTRUZIONI_PUBBLICAZIONE_HTTPS.txt`.
 
-La cache del service worker per questa versione è `guitar-studio-v2-2-2`.
+La cache del service worker per questa versione è `guitar-studio-v2-3-0`.
 
 ## Dati e privacy
 Il diario e i progressi vengono salvati nel browser del dispositivo. Usa “Salva backup” prima di cambiare indirizzo del sito, browser o dispositivo; usa “Ripristina backup” per recuperare i dati.
 
+
+## Novità 2.3.0 — schermo sempre acceso
+
+Nella schermata iniziale la nuova scheda **Schermo** ha la casella «Tieni lo schermo acceso mentre usi l'app», attiva di default: lo schermo non si spegne più dopo qualche secondo di inattività mentre suoni. L'app usa il Screen Wake Lock del browser e lo richiede di nuovo da sola quando torni all'app dopo averla lasciata in secondo piano.
+- iPhone: funziona in Safari da iOS 16.4; se l'app è aggiunta alla schermata Home serve iOS 18.4 o successivo.
+- Se il telefono è in risparmio energetico, il sistema può rifiutare la richiesta: la scheda lo segnala e l'app riprova al tocco successivo.
+- Disattiva la casella se vuoi risparmiare batteria. La scelta resta salvata su questo dispositivo (non fa parte del backup).
 
 ## Novità 2.2.2 — power chord di RE
 

@@ -1,6 +1,6 @@
 'use strict';
 // Guitar Studio 2.1 — logica dell'app. I contenuti didattici sono in data.js.
-const APP_VERSION='2.2.2';
+const APP_VERSION='2.3.0';
 const $=id=>document.getElementById(id);
 const AudioCtor=window.AudioContext||window.webkitAudioContext;
 const pad2=n=>String(n).padStart(2,'0');
@@ -67,6 +67,38 @@ function effectiveTheme(){const t=document.documentElement.dataset.theme;return 
 function paintThemeBtn(){const dark=effectiveTheme()==='dark';$('themeBtn').innerHTML=ico(dark?'sun':'moon');$('themeBtn').setAttribute('aria-label',dark?'Passa al tema chiaro':'Passa al tema scuro')}
 $('themeBtn').addEventListener('click',()=>{const next=effectiveTheme()==='dark'?'light':'dark';document.documentElement.dataset.theme=next;try{localStorage.setItem(KEY_THEME,next)}catch(e){}paintThemeBtn()});
 paintThemeBtn();
+
+/* ---------- Schermo sempre acceso (Screen Wake Lock) ---------- */
+// Su iPhone: Safari dal 16.4; app aggiunta alla Home dal 18.4. Il blocco cade quando la pagina va in secondo piano
+// e va richiesto di nuovo al ritorno; se il telefono è in risparmio energetico la richiesta può essere rifiutata.
+const KEY_AWAKE='guitarStudioKeepAwakeV1';
+let keepAwake=loadJSON(KEY_AWAKE,true)!==false,wakeLock=null,wakeBusy=false,wakeFailed=false,wakeRetryAt=0;
+const wakeSupported=()=>!!(navigator.wakeLock&&typeof navigator.wakeLock.request==='function');
+function paintWake(){
+  const cb=$('keepAwake'),msg=$('wakeMsg');if(!cb||!msg)return;
+  cb.checked=keepAwake;
+  msg.textContent=!wakeSupported()?'Questo browser non supporta la funzione: lo schermo segue le impostazioni del telefono. Su iPhone serve iOS 16.4, oppure iOS 18.4 se l’app è aggiunta alla schermata Home.'
+    :!keepAwake?'Disattivato: lo schermo si spegne come da impostazioni del telefono.'
+    :wakeLock?'Attivo: lo schermo resta acceso finché l’app è aperta e in primo piano.'
+    :wakeFailed?'Il telefono non lo permette in questo momento (forse è attivo il risparmio energetico). Riprovo appena tocchi lo schermo.'
+    :'Si attiva appena tocchi lo schermo.';
+}
+async function wakeAcquire(){
+  if(!keepAwake||!wakeSupported()||wakeLock||wakeBusy||document.visibilityState!=='visible'||Date.now()<wakeRetryAt)return;
+  wakeBusy=true;
+  try{
+    const sentinel=await navigator.wakeLock.request('screen');
+    if(!keepAwake||document.visibilityState!=='visible'){sentinel.release().catch(()=>{})}
+    else{wakeLock=sentinel;wakeFailed=false;sentinel.addEventListener('release',()=>{if(wakeLock===sentinel){wakeLock=null;paintWake()}})}
+  }catch(e){wakeLock=null;wakeFailed=true;wakeRetryAt=Date.now()+3000}
+  wakeBusy=false;paintWake();
+}
+function wakeRelease(){const s=wakeLock;wakeLock=null;if(s)s.release().catch(()=>{});paintWake()}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')wakeAcquire()});
+window.addEventListener('pageshow',()=>{wakeAcquire()});
+['pointerdown','touchend','keydown'].forEach(ev=>document.addEventListener(ev,()=>{if(!wakeLock)wakeAcquire()},{passive:true}));
+$('keepAwake').addEventListener('change',e=>{keepAwake=e.target.checked;saveJSON(KEY_AWAKE,keepAwake);wakeFailed=false;wakeRetryAt=0;if(keepAwake)wakeAcquire();else wakeRelease();paintWake()});
+paintWake();wakeAcquire();
 
 /* ---------- Finestra di dettaglio ---------- */
 const dialogHistory=[];

@@ -425,3 +425,10 @@ input[type=range]{padding:0;min-height:0;border:0;background:none;accent-color:v
 .slider-field{margin:16px 0 4px}
 .check-field{margin:14px 0 10px}
 .coach .weak-list+.btn{margin-top:2px}
+
+/* Home: scheda Schermo (schermo sempre acceso) */
+.wake-card{margin-top:30px;margin-bottom:0}
+.wake-card h2{font-size:18px;margin:0 0 4px}
+.wake-card .check-field{margin:10px 0 6px}
+.wake-card .small-text{margin:0}
+.wake-card+.app-card{margin-top:14px}
