@@ -1,6 +1,6 @@
 'use strict';
 // Guitar Studio 2.1 — logica dell'app. I contenuti didattici sono in data.js.
-const APP_VERSION='2.2.0';
+const APP_VERSION='2.2.1';
 const $=id=>document.getElementById(id);
 const AudioCtor=window.AudioContext||window.webkitAudioContext;
 const pad2=n=>String(n).padStart(2,'0');
@@ -123,9 +123,14 @@ function chordSVG(ch){
   ch.frets.forEach((f,i)=>{if(f>0){const x=x0+i*xg,y=y0+(f-base+.5)*yg;s+=`<circle class="cd-dot" cx="${x}" cy="${y}" r="9"/><text class="cd-num" x="${x}" y="${y+4}" text-anchor="middle">${ch.fingers[i]||''}</text>`}});
   return s+'</svg>';
 }
+// Ordine: per famiglia (come i filtri), poi per fondamentale lungo la scala DO, RE, MI, FA, SOL, LA, SI
+// (le alterazioni stanno tra le note vicine: FA♯ dopo FA, SI♭ prima di SI); a parità di nota resta l'ordine dei dati.
+const CHORD_FAMILIES=['Maggiori','Minori','Settima','Altri','Power'];
+const chordRootPc=c=>{const m=/^([A-G])([#b]?)/.exec(c.name);return {C:0,D:2,E:4,F:5,G:7,A:9,B:11}[m[1]]+(m[2]==='#'?1:m[2]==='b'?-1:0)};
+const chordsOrdered=chordData.map((c,i)=>[c,i]).sort((a,b)=>CHORD_FAMILIES.indexOf(a[0].type)-CHORD_FAMILIES.indexOf(b[0].type)||chordRootPc(a[0])-chordRootPc(b[0])||a[1]-b[1]).map(x=>x[0]);
 function renderChords(filter='tutti'){
   const host=$('chordGrid');host.innerHTML='';
-  chordData.filter(c=>filter==='tutti'||c.type===filter).forEach(ch=>{
+  chordsOrdered.filter(c=>filter==='tutti'||c.type===filter).forEach(ch=>{
     const card=document.createElement('button');card.className='chord-card';
     card.innerHTML=`<div class="chord-card-head"><div><h3>${esc(chordLabel(ch))}</h3><small>${esc(chordExtra(ch))}</small></div></div>${chordSVG(ch)}<div class="chord-strings"><span>6ª</span><span>5ª</span><span>4ª</span><span>3ª</span><span>2ª</span><span>1ª</span></div>`;
     card.addEventListener('click',()=>openChordDetail(ch));host.appendChild(card);
