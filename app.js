@@ -1,6 +1,6 @@
 'use strict';
 // Guitar Studio 2.1 — logica dell'app. I contenuti didattici sono in data.js.
-const APP_VERSION='2.2.1';
+const APP_VERSION='2.2.2';
 const $=id=>document.getElementById(id);
 const AudioCtor=window.AudioContext||window.webkitAudioContext;
 const pad2=n=>String(n).padStart(2,'0');

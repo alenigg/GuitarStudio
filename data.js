@@ -63,6 +63,7 @@ const chordData=[
  {name:"A5",type:"Power",frets:[-1,0,2,2,-1,-1],fingers:[0,0,1,3,0,0],base:1,desc:"LA power chord"},
  {name:"B5",type:"Power",frets:[-1,2,4,4,-1,-1],fingers:[0,1,3,4,0,0],base:2,desc:"SI power chord"},
  {name:"C5",type:"Power",frets:[-1,3,5,5,-1,-1],fingers:[0,1,3,4,0,0],base:3,desc:"DO power chord"},
+ {name:"D5",type:"Power",frets:[-1,5,7,7,-1,-1],fingers:[0,1,3,4,0,0],base:5,desc:"RE power chord"},
  {name:"Fmini",type:"Maggiori",frets:[-1,-1,3,2,1,1],fingers:[0,0,3,2,1,1],base:1,desc:"FA maggiore semplificato",intl:"F"},
  {name:"Fm",type:"Minori",frets:[1,3,3,1,1,1],fingers:[1,3,4,1,1,1],base:1,desc:"FA minore · barrè"},
  {name:"Gm",type:"Minori",frets:[3,5,5,3,3,3],fingers:[1,3,4,1,1,1],base:3,desc:"SOL minore · barrè"},

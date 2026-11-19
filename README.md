@@ -1,4 +1,4 @@
-# Guitar Studio PWA 2.2.1
+# Guitar Studio PWA 2.2.2
 
 Applicazione statica per lo studio della chitarra. Dopo il primo caricamento, le funzioni principali sono disponibili offline.
 
@@ -15,11 +15,15 @@ Applicazione statica per lo studio della chitarra. Dopo il primo caricamento, le
 ## Pubblicazione
 Estrai lo ZIP e pubblica il contenuto della cartella su un hosting HTTPS statico, per esempio Netlify o GitHub Pages. Le istruzioni passo passo sono in `ISTRUZIONI_PUBBLICAZIONE_HTTPS.txt`.
 
-La cache del service worker per questa versione è `guitar-studio-v2-2-1`.
+La cache del service worker per questa versione è `guitar-studio-v2-2-2`.
 
 ## Dati e privacy
 Il diario e i progressi vengono salvati nel browser del dispositivo. Usa “Salva backup” prima di cambiare indirizzo del sito, browser o dispositivo; usa “Ripristina backup” per recuperare i dati.
 
+
+## Novità 2.2.2 — power chord di RE
+
+Aggiunto RE power chord (D5) alla pagina Accordi, con la stessa forma di SI5 e DO5 (fondamentale sulla 5ª corda, 5° tasto). Ora i power chord sulle sette note naturali sono tutti presenti: DO5, RE5, MI5, FA5, SOL5, LA5, SI5.
 
 ## Novità 2.2.1 — accordi in ordine di scala
 
