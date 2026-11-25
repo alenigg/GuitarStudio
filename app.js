@@ -1,6 +1,6 @@
 'use strict';
-// Guitar Studio 3.0 — logica dell'app. I contenuti didattici sono in data.js.
-const APP_VERSION='3.0.0';
+// Guitar Studio 3.1 — logica dell'app. I contenuti didattici sono in data.js.
+const APP_VERSION='3.1.0';
 const $=id=>document.getElementById(id);
 const AudioCtor=window.AudioContext||window.webkitAudioContext;
 const pad2=n=>String(n).padStart(2,'0');
@@ -104,7 +104,7 @@ const dialogHistory=[];
 function openDialog(eyebrow,html,{keepCurrent=false,chords=[],bpm=0,beats=4,doneKey=''}={}){
   stopInlineMetronome();
   const dialog=$('lessonDialog');
-  if(dialog.open&&keepCurrent)dialogHistory.push({eyebrow:$('dialogEyebrow').textContent,html:$('lessonContent').innerHTML});
+  if(dialog.open&&keepCurrent)dialogHistory.push({eyebrow:$('dialogEyebrow').textContent,html:$('lessonContent').innerHTML,top:dialog.scrollTop});
   else if(!dialog.open)dialogHistory.length=0;
   $('dialogEyebrow').textContent=eyebrow;
   $('lessonContent').innerHTML=html;
@@ -113,14 +113,16 @@ function openDialog(eyebrow,html,{keepCurrent=false,chords=[],bpm=0,beats=4,done
   if(doneKey)$('lessonContent').insertAdjacentHTML('beforeend',`<button type="button" class="btn full done-toggle" data-done-key="${esc(doneKey)}"></button>`);
   bindInteractiveContent($('lessonContent'));
   if(!dialog.open)dialog.showModal();
+  dialog.scrollTop=0;
 }
 function closeDialogLayer(){
   stopInlineMetronome();
-  if(dialogHistory.length){const previous=dialogHistory.pop();$('dialogEyebrow').textContent=previous.eyebrow;$('lessonContent').innerHTML=previous.html;bindInteractiveContent($('lessonContent'));return}
+  if(dialogHistory.length){const previous=dialogHistory.pop();$('dialogEyebrow').textContent=previous.eyebrow;$('lessonContent').innerHTML=previous.html;bindInteractiveContent($('lessonContent'));$('lessonDialog').scrollTop=previous.top||0;return}
   $('lessonDialog').close();
 }
 $('closeLesson').addEventListener('click',closeDialogLayer);
 $('lessonDialog').addEventListener('close',()=>{stopInlineMetronome();dialogHistory.length=0});
+$('lessonDialog').addEventListener('scroll',()=>document.querySelector('.dialog-head').classList.toggle('scrolled',$('lessonDialog').scrollTop>4),{passive:true});
 $('lessonDialog').addEventListener('click',e=>{if(e.target===$('lessonDialog'))closeDialogLayer()});
 
 /* ---------- Lezioni ed esercizi ---------- */
@@ -140,11 +142,39 @@ function exerciseGrid(ex){
   let bar=0;
   return `<div class="ex-grid-wrap"><h3>Schema del giro</h3><div class="ex-grid">${ex.grid.map(row=>`<div class="ex-grid-row">${row.map(n=>`<div class="ex-bar"><small>${++bar}</small>${cell(n)}</div>`).join('')}</div>`).join('')}</div>${ex.gridNote?`<p class="small-text muted">${esc(ex.gridNote)}</p>`:''}</div>`;
 }
+// Ritmica illustrata: una casella per suddivisione, raggruppate per battito.
+// Simboli: D/U pennata giù/su, d/u movimento a vuoto, - pausa, . la nota continua, B basso, P/i/m/a dita; ">" = accento.
+const RH_SYM={D:['↓','Pennata in giù'],U:['↑','Pennata in su'],d:['↓','Movimento a vuoto (non tocca le corde)'],u:['↑','Movimento a vuoto (non tocca le corde)'],'-':['<svg class="rest-ico" viewBox="0 0 12 26" aria-hidden="true"><path d="M4 1l6 7.5-3.6 4.2L10.5 18c-3.4-1.6-5.6-.4-3.3 6.5C2.5 21 2.8 16.4 6.6 17L1.8 11 5.6 7z" fill="currentColor"/></svg>','Pausa'],'.':['–','La nota continua a suonare'],B:['●','Nota di basso'],P:['P','Pollice'],i:['i','Indice'],m:['m','Medio'],a:['a','Anulare']};
+function rhythmCounts(beats,sub){const out=[];for(let b=1;b<=beats;b++){if(sub===1)out.push(String(b));else if(sub===2)out.push(String(b),'e');else out.push(String(b),'·','e')}return out}
+function rhythmBlock(r){
+  const tokens=r.cells.trim().split(/\s+/),counts=rhythmCounts(r.beats,r.sub),used=new Set();let accent=false;
+  let html=`<div class="rhythm${r.over?' has-over':''}${tokens.some(t=>t.endsWith('>'))?' has-acc':''}" data-beats="${r.beats}">${r.title?`<p class="tab-title">${esc(r.title)}</p>`:''}<div class="rh-bar">`;
+  for(let b=0;b<r.beats;b++){
+    html+=`<div class="rh-beat" data-beat="${b}">`;
+    for(let k=0;k<r.sub;k++){
+      const idx=b*r.sub+k,tok=tokens[idx]||'.',acc=tok.endsWith('>'),key=acc?tok.slice(0,-1):tok,sym=RH_SYM[key]||[key,''];
+      if(acc)accent=true;if(sym[1])used.add(key==='u'?'d':key);
+      const cls=key==='d'||key==='u'?'ghost':key==='-'?'rest':key==='.'?'hold':/[PimaB]/.test(key)?'finger':'';
+      const over=r.over&&r.over[idx]?chordByName(r.over[idx]):null;
+      html+=`<div class="rh-cell ${cls}${acc?' accent':''}${k===0?' on-beat':''}"><span class="rh-over">${over?esc(over.intl||intlName(over)):''}</span><span class="rh-acc">${acc?'&gt;':''}</span><span class="rh-sym">${sym[0]}</span><span class="rh-count">${counts[idx]}</span></div>`;
+    }
+    html+='</div>';
+  }
+  html+='</div>';
+  const leg=Object.keys(RH_SYM).filter(k=>used.has(k)&&(k!=='.'||r.sub>1)).map(k=>`<span><b class="${k==='d'?'ghost':k==='.'?'hold':''}">${RH_SYM[k][0]}</b> ${RH_SYM[k][1]}</span>`);
+  if(accent)leg.push('<span><b>&gt;</b> Accento: più forte</span>');
+  if(r.swing)leg.push('<span>Swing: ogni battito è diviso in tre; la prima nota ne occupa due, la seconda una</span>');
+  return html+(leg.length?`<p class="rh-legend">${leg.join('')}</p>`:'')+'</div>';
+}
+function exerciseRhythm(ex){
+  if(!ex.rhythm)return '';
+  return `<div class="rhythm-wrap"><h3>Ritmica</h3>${ex.rhythm.map(rhythmBlock).join('')}<p class="small-text muted">Con il metronomo qui sotto avviato, il battito in corso si illumina.</p></div>`;
+}
 function exerciseTabs(ex){
   const tabs=ex.tabs||(ex.tab?[{title:'',lines:ex.tab}]:[]);
   return tabs.map(t=>`${t.title?`<p class="tab-title">${esc(t.title)}</p>`:''}<pre class="tab-block" aria-label="Tablatura">${esc(t.lines.join('\n'))}</pre>`).join('');
 }
-exerciseData.forEach(ex=>{const b=rowButton(ex.n,ex.title,ex.level,'e'+ex.n);b.addEventListener('click',()=>openDialog('Esercizio',`<h2>${ex.n} · ${ex.title}</h2><p class="muted">${ex.level}</p><p>${ex.body}</p>${exerciseChordStrip(ex.chords||[])}${exerciseGrid(ex)}<div class="exercise"><b>Sequenza da provare</b><p class="exercise-pattern">${ex.pattern}</p>${exerciseTabs(ex)}<h3>Procedura</h3><ol><li>Prepara la posizione e suona lentamente una volta per prendere confidenza.</li><li>Ripeti la sequenza per quattro cicli, controllando che ogni movimento sia preciso.</li><li>Fai una breve pausa, poi riparti e confronta la regolarità del suono.</li><li>Concludi con un ciclo lento e pulito, senza accelerare per finire prima.</li></ol><p><b>Obiettivo:</b> completare tre cicli consecutivi senza fermarti e senza tensione.</p></div>`,{bpm:ex.bpm||0,beats:ex.beats||4,doneKey:'e'+ex.n}));$('exerciseList').appendChild(b)});
+exerciseData.forEach(ex=>{const b=rowButton(ex.n,ex.title,ex.level,'e'+ex.n);b.addEventListener('click',()=>openDialog('Esercizio',`<h2>${ex.n} · ${ex.title}</h2><p class="muted">${ex.level}</p><p>${ex.body}</p>${exerciseChordStrip(ex.chords||[])}${exerciseGrid(ex)}<div class="exercise"><b>Sequenza da provare</b><p class="exercise-pattern">${ex.pattern}</p>${exerciseTabs(ex)}<h3>Procedura</h3><ol><li>Prepara la posizione e suona lentamente una volta per prendere confidenza.</li><li>Ripeti la sequenza per quattro cicli, controllando che ogni movimento sia preciso.</li><li>Fai una breve pausa, poi riparti e confronta la regolarità del suono.</li><li>Concludi con un ciclo lento e pulito, senza accelerare per finire prima.</li></ol><p><b>Obiettivo:</b> completare tre cicli consecutivi senza fermarti e senza tensione.</p></div>${exerciseRhythm(ex)}`,{bpm:ex.bpm||0,beats:ex.beats||4,doneKey:'e'+ex.n}));$('exerciseList').appendChild(b)});
 
 /* ---------- Accordi ---------- */
 const NOTE_INT=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];
@@ -173,9 +203,11 @@ function chordSVG(ch){
 const CHORD_FAMILIES=['Maggiori','Minori','Settima','Altri','Power'];
 const chordRootPc=c=>{const m=/^([A-G])([#b]?)/.exec(c.name);return {C:0,D:2,E:4,F:5,G:7,A:9,B:11}[m[1]]+(m[2]==='#'?1:m[2]==='b'?-1:0)};
 const chordsOrdered=chordData.map((c,i)=>[c,i]).sort((a,b)=>CHORD_FAMILIES.indexOf(a[0].type)-CHORD_FAMILIES.indexOf(b[0].type)||chordRootPc(a[0])-chordRootPc(b[0])||a[1]-b[1]).map(x=>x[0]);
+// Filtro «Tutti»: ordine per nota (DO, DO♯, RE…), e per ogni nota maggiore, minore, settime, varianti, power chord.
+const chordsByNote=chordData.map((c,i)=>[c,i]).sort((a,b)=>((chordRootPc(a[0])+12)%12)-((chordRootPc(b[0])+12)%12)||CHORD_FAMILIES.indexOf(a[0].type)-CHORD_FAMILIES.indexOf(b[0].type)||a[1]-b[1]).map(x=>x[0]);
 function renderChords(filter='tutti'){
   const host=$('chordGrid');host.innerHTML='';
-  chordsOrdered.filter(c=>filter==='tutti'||c.type===filter).forEach(ch=>{
+  (filter==='tutti'?chordsByNote:chordsOrdered.filter(c=>c.type===filter)).forEach(ch=>{
     const card=document.createElement('button');card.className='chord-card';
     card.innerHTML=`<div class="chord-card-head"><div><h3>${esc(chordLabel(ch))}</h3><small>${esc(chordExtra(ch))}</small></div></div>${chordSVG(ch)}<div class="chord-strings"><span>6ª</span><span>5ª</span><span>4ª</span><span>3ª</span><span>2ª</span><span>1ª</span></div>`;
     card.addEventListener('click',()=>openChordDetail(ch));host.appendChild(card);
@@ -224,10 +256,10 @@ async function toggleInlineMetronome(box){
   inlineMetro.running=true;inlineMetro.box=box;inlineMetro.ctx=ctx;inlineMetro.index=0;inlineMetro.queue=[];inlineMetro.next=ctx.currentTime+.05;
   box.querySelector('[data-inline-toggle]').innerHTML=`${ico('pause')}<span>Ferma</span>`;box.querySelector('[data-inline-status]').textContent='Metronomo attivo';
   const tick=()=>{if(!inlineMetro.running)return;while(inlineMetro.next<ctx.currentTime+.12){clickSound(ctx,inlineMetro.next,inlineMetro.index%(Number(box.dataset.beats)||4)===0?2:0);inlineMetro.queue.push({t:inlineMetro.next,i:inlineMetro.index%(Number(box.dataset.beats)||4)});inlineMetro.next+=60/(Number(box.dataset.bpm)||60);inlineMetro.index++}inlineMetro.timer=setTimeout(tick,25)};
-  const frame=()=>{if(!inlineMetro.running)return;let last=null;while(inlineMetro.queue.length&&inlineMetro.queue[0].t<=ctx.currentTime)last=inlineMetro.queue.shift();if(last&&inlineMetro.box===box)box.querySelectorAll('.inline-beats i').forEach((el,i)=>el.classList.toggle('on',i===last.i));inlineMetro.raf=requestAnimationFrame(frame)};
+  const frame=()=>{if(!inlineMetro.running)return;let last=null;while(inlineMetro.queue.length&&inlineMetro.queue[0].t<=ctx.currentTime)last=inlineMetro.queue.shift();if(last&&inlineMetro.box===box){box.querySelectorAll('.inline-beats i').forEach((el,i)=>el.classList.toggle('on',i===last.i));$('lessonContent').querySelectorAll(`.rhythm[data-beats="${Number(box.dataset.beats)||4}"] .rh-beat`).forEach(el=>el.classList.toggle('now',Number(el.dataset.beat)===last.i))}inlineMetro.raf=requestAnimationFrame(frame)};
   tick();frame();
 }
-function stopInlineMetronome(){if(!inlineMetro?.running)return;inlineMetro.running=false;clearTimeout(inlineMetro.timer);cancelAnimationFrame(inlineMetro.raf);if(inlineMetro.box){inlineMetro.box.querySelectorAll('.inline-beats i').forEach(x=>x.classList.remove('on'));inlineMetro.box.querySelector('[data-inline-toggle]').innerHTML=`${ico('play')}<span>Avvia</span>`;inlineMetro.box.querySelector('[data-inline-status]').textContent='Metronomo fermato.'}inlineMetro.box=null;inlineMetro.queue=[]}
+function stopInlineMetronome(){if(!inlineMetro?.running)return;inlineMetro.running=false;clearTimeout(inlineMetro.timer);cancelAnimationFrame(inlineMetro.raf);document.querySelectorAll('.rh-beat.now').forEach(x=>x.classList.remove('now'));if(inlineMetro.box){inlineMetro.box.querySelectorAll('.inline-beats i').forEach(x=>x.classList.remove('on'));inlineMetro.box.querySelector('[data-inline-toggle]').innerHTML=`${ico('play')}<span>Avvia</span>`;inlineMetro.box.querySelector('[data-inline-status]').textContent='Metronomo fermato.'}inlineMetro.box=null;inlineMetro.queue=[]}
 
 /* ---------- Percorso accordi ---------- */
 function renderChordPath(){
@@ -325,34 +357,58 @@ function metroCfg(){const v=$('beats').value;return v==='6'?{n:6,div:3,level:i=>
 function renderLights(){const c=metroCfg();$('beatLights').innerHTML=Array.from({length:c.n},(_,i)=>`<i class="${c.level(i)===2?'accent':''}"></i>`).join('')}
 $('beats').addEventListener('change',()=>{renderLights();metro.i=0});
 renderLights();
-// Click del metronomo (3.0): suono tipo «woodblock» calcolato una volta sola e normalizzato.
-// Energia concentrata tra 2 e 4 kHz, dove l'orecchio è più sensibile e anche gli altoparlanti dei telefoni rendono bene.
-// Picco del campione a −0,4 dBFS (accento) e −0,9 dBFS (battiti normali): il più forte possibile senza superare
-// il fondo scala, quindi senza distorsione digitale. L'accento si distingue soprattutto per l'altezza.
-const CLICK_SPEC=[{f:2000,peak:.90},{f:2350,peak:.92},{f:2900,peak:.955}];
+// Suoni del metronomo (3.1). Ogni suono è calcolato una volta sola e normalizzato: picco del campione a −0,4 dBFS
+// (accento) e −0,9 dBFS (battiti normali), quindi alla massima intensità senza distorsione digitale.
+// Il volume scelto dall'utente riduce soltanto (100% = massimo pulito). Vale anche per lezioni, esercizi e Sfide.
+const KEY_METRO='guitarStudioMetroSoundV1';
+const CLICK_PEAK=[.90,.92,.955];
+function resonator(x,sr,f,q){const bw=f/q,r=Math.exp(-Math.PI*bw/sr),c=2*r*Math.cos(2*Math.PI*f/sr),r2=r*r;let y1=0,y2=0;return x.map(v=>{const y=(1-r)*v+c*y1-r2*y2;y2=y1;y1=y;return y})}
+const CLICK_SOUNDS={
+  legno:{label:'Legno',len:.07,make(sr,len,lv,rnd){const f=[2000,2350,2900][lv],d=new Float32Array(len);
+    for(let i=0;i<len;i++){const t=i/sr;d[i]=Math.exp(-t/.014)*(Math.sin(2*Math.PI*f*t)+.5*Math.sin(2*Math.PI*f*1.51*t))+.45*Math.exp(-t/.022)*Math.sin(2*Math.PI*f*.5*t)+.5*Math.exp(-t/.0009)*rnd()}return d}},
+  bip:{label:'Bip',len:.06,make(sr,len,lv){const f=[1400,1650,2100][lv],d=new Float32Array(len);
+    for(let i=0;i<len;i++){const t=i/sr,env=t<.025?1:Math.exp(-(t-.025)/.008);d[i]=env*(Math.sin(2*Math.PI*f*t)+Math.sin(2*Math.PI*3*f*t)/3+Math.sin(2*Math.PI*5*f*t)/5)}return d}},
+  campanaccio:{label:'Campanaccio',len:.085,make(sr,len,lv){const k=[1,1.06,1.22][lv],f1=560*k,f2=835*k,d=new Float32Array(len);
+    const sq=(f,t)=>Math.sin(2*Math.PI*f*t)+Math.sin(2*Math.PI*3*f*t)/3+Math.sin(2*Math.PI*5*f*t)/5;
+    for(let i=0;i<len;i++){const t=i/sr;d[i]=(Math.exp(-t/.006)*.6+Math.exp(-t/.032))*(sq(f1,t)+.8*sq(f2,t))}return d}},
+  bacchette:{label:'Bacchette',len:.045,make(sr,len,lv,rnd){const f=[2500,2900,3500][lv],n=new Float32Array(len);
+    for(let i=0;i<len;i++)n[i]=rnd()*Math.exp(-i/sr/.004);
+    const a=resonator(n,sr,f,14),b=resonator(n,sr,f*1.47,10),d=new Float32Array(len);
+    for(let i=0;i<len;i++)d[i]=a[i]+.7*b[i]+.25*n[i];return d}}
+};
+let metroPrefs=Object.assign({sound:'legno',volume:100},loadJSON(KEY_METRO,{}));
+if(!CLICK_SOUNDS[metroPrefs.sound])metroPrefs.sound='legno';
+metroPrefs.volume=Math.max(0,Math.min(100,Number(metroPrefs.volume)));if(!Number.isFinite(metroPrefs.volume))metroPrefs.volume=100;
 const clickCache=new WeakMap();
-function clickBuffers(ctx){
-  let b=clickCache.get(ctx);if(b)return b;
-  const sr=ctx.sampleRate,len=Math.floor(sr*.07);
-  b=CLICK_SPEC.map(({f,peak},lv)=>{
-    const buf=ctx.createBuffer(1,len,sr),d=buf.getChannelData(0);let seed=9871+lv,max=0;
-    const rnd=()=>{seed=(seed*16807)%2147483647;return seed/1073741823.5-1};
-    for(let i=0;i<len;i++){
-      const t=i/sr,tone=Math.exp(-t/.014),body=Math.exp(-t/.022),tick=Math.exp(-t/.0009);
-      let v=tone*(Math.sin(2*Math.PI*f*t)+.5*Math.sin(2*Math.PI*f*1.51*t))+.45*body*Math.sin(2*Math.PI*f*.5*t)+.5*tick*rnd();
-      v*=Math.min(1,i/(sr*.0004));                       // attacco di 0,4 ms: nessuno «schiocco» digitale
-      if(i>len-sr*.004)v*=(len-i)/(sr*.004);              // coda sfumata a zero
-      d[i]=v;if(Math.abs(v)>max)max=Math.abs(v);
-    }
+function clickBuffers(ctx,sound=metroPrefs.sound){
+  let byCtx=clickCache.get(ctx);if(!byCtx){byCtx={};clickCache.set(ctx,byCtx)}
+  if(byCtx[sound])return byCtx[sound];
+  const spec=CLICK_SOUNDS[sound],sr=ctx.sampleRate,len=Math.floor(sr*spec.len);
+  byCtx[sound]=CLICK_PEAK.map((peak,lv)=>{
+    let seed=9871+lv;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/1073741823.5-1};
+    const raw=spec.make(sr,len,lv,rnd),buf=ctx.createBuffer(1,len,sr),d=buf.getChannelData(0);let max=0;
+    for(let i=0;i<len;i++){let v=raw[i]*Math.min(1,i/(sr*.0004));if(i>len-sr*.004)v*=(len-i)/(sr*.004);d[i]=v;if(Math.abs(v)>max)max=Math.abs(v)}
     for(let i=0;i<len;i++)d[i]*=peak/max;
     return buf;
   });
-  clickCache.set(ctx,b);return b;
+  return byCtx[sound];
 }
-function clickSound(ctx,time,level){
-  const src=ctx.createBufferSource();src.buffer=clickBuffers(ctx)[level]||clickBuffers(ctx)[0];
-  src.connect(ctx.destination);src.start(time);
+const volumeGain=()=>Math.pow(metroPrefs.volume/100,2); // curva quadratica: il cursore segue meglio la sensazione di volume
+function clickSound(ctx,time,level,sound){
+  const g=volumeGain();if(g<=0)return;
+  const src=ctx.createBufferSource(),bufs=clickBuffers(ctx,sound||metroPrefs.sound);src.buffer=bufs[level]||bufs[0];
+  if(g>=1)src.connect(ctx.destination);else{const v=ctx.createGain();v.gain.value=g;src.connect(v);v.connect(ctx.destination)}
+  src.start(time);
 }
+function paintMetroPrefs(){
+  document.querySelectorAll('[data-sound]').forEach(b=>{const on=b.dataset.sound===metroPrefs.sound;b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on))});
+  $('metroVol').value=metroPrefs.volume;$('metroVolOut').textContent=metroPrefs.volume+'%';
+}
+async function previewClick(){if(metro.running||inlineMetro.running)return;const ctx=await getCtx();if(!ctx)return;const t=ctx.currentTime+.03;clickSound(ctx,t,2);clickSound(ctx,t+.35,0)}
+document.querySelectorAll('[data-sound]').forEach(b=>b.addEventListener('click',()=>{metroPrefs.sound=b.dataset.sound;saveJSON(KEY_METRO,metroPrefs);paintMetroPrefs();previewClick()}));
+$('metroVol').addEventListener('input',e=>{metroPrefs.volume=Number(e.target.value);$('metroVolOut').textContent=metroPrefs.volume+'%'});
+$('metroVol').addEventListener('change',()=>{saveJSON(KEY_METRO,metroPrefs);previewClick()});
+paintMetroPrefs();
 function metroTick(){
   const ctx=metro.ctx,c=metroCfg();
   while(metro.next<ctx.currentTime+.12){

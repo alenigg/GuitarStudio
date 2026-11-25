@@ -1,4 +1,4 @@
-# Guitar Studio PWA 3.0.0
+# Guitar Studio PWA 3.1.0
 
 Applicazione statica per lo studio della chitarra. Dopo il primo caricamento, le funzioni principali sono disponibili offline.
 
@@ -15,11 +15,19 @@ Applicazione statica per lo studio della chitarra. Dopo il primo caricamento, le
 ## Pubblicazione
 Estrai lo ZIP e pubblica il contenuto della cartella su un hosting HTTPS statico, per esempio Netlify o GitHub Pages. Le istruzioni passo passo sono in `ISTRUZIONI_PUBBLICAZIONE_HTTPS.txt`.
 
-La cache del service worker per questa versione è `guitar-studio-v3-0-0`.
+La cache del service worker per questa versione è `guitar-studio-v3-1-0`.
 
 ## Dati e privacy
 Il diario e i progressi vengono salvati nel browser del dispositivo. Usa “Salva backup” prima di cambiare indirizzo del sito, browser o dispositivo; usa “Ripristina backup” per recuperare i dati.
 
+
+## Novità 3.1.0 — ritmica illustrata, suoni del metronomo, finestre più comode
+
+- **Metronomo**: quattro suoni a scelta (Legno, Bip, Campanaccio, Bacchette) e cursore del volume. Ogni suono arriva al massimo pulito, senza distorsione; il volume riduce soltanto. Toccando un suono o spostando il volume senti un'anteprima. Suono e volume restano salvati e valgono anche per il metronomo di lezioni, esercizi e Sfide. Il Bip è il più penetrante, le Bacchette il più discreto.
+- **Esercizi con la ritmica disegnata** (18 esercizi): una casella per ogni suddivisione con pennate in giù e in su, movimenti a vuoto, pause, accenti, basso, dita e swing, più la legenda dei simboli usati. È subito sopra il metronomo dell'esercizio e, quando lo avvii, il battito in corso si illumina.
+- **Finestre** (lezioni, esercizi, schede accordo): la riga con la X resta fissa in alto, quindi puoi chiudere anche dal fondo della pagina. Aprendo una scheda accordo da un esercizio parti dall'alto e, chiudendola, torni al punto dell'esercizio in cui eri.
+- **Accordi**: con il filtro «Tutti» l'ordine è per nota (DO, DO♯, RE…), e per ogni nota maggiore, minore, settime, varianti e power chord. Gli altri filtri restano come prima.
+- **Accordatore**: rimosso il riquadro in fondo con le note delle corde (la stessa informazione è nel sottotitolo della pagina).
 
 ## Novità 3.0.0 — nuova navigazione, metronomo più forte, giri classici
 

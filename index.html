@@ -149,7 +149,6 @@
         <button id="tunerStart" class="btn full">Avvia microfono</button>
         <p class="small-text muted">Consenti l'accesso al microfono quando richiesto.</p>
       </div>
-      <div class="string-strip"><span>MI (E)</span><span>LA (A)</span><span>RE (D)</span><span>SOL (G)</span><span>SI (B)</span><span>MI (E)</span><small>6ª · 5ª · 4ª · 3ª · 2ª · 1ª</small></div>
     </section>
 
     <section id="teoria" class="view">
@@ -309,6 +308,8 @@
         <input id="bpmRange" class="range" type="range" min="40" max="220" value="80" aria-label="Battiti al minuto">
         <div class="bpm-actions"><button id="bpmDown" class="round-btn" aria-label="Diminuisci">−</button><button id="bpmUp" class="round-btn" aria-label="Aumenta">+</button></div>
         <div class="chips center"><button class="chip" data-bpm="60">Lento · 60</button><button class="chip" data-bpm="80">Moderato · 80</button><button class="chip" data-bpm="100">Allegro · 100</button><button class="chip" data-bpm="120">Veloce · 120</button></div>
+        <div class="metro-sound"><span class="control-label">Suono</span><div class="chips center" role="group" aria-label="Suono del metronomo"><button type="button" class="chip" data-sound="legno">Legno</button><button type="button" class="chip" data-sound="bip">Bip</button><button type="button" class="chip" data-sound="campanaccio">Campanaccio</button><button type="button" class="chip" data-sound="bacchette">Bacchette</button></div></div>
+        <div class="control-row vol-row"><label for="metroVol">Volume</label><input id="metroVol" class="range" type="range" min="0" max="100" step="5" value="100"><output id="metroVolOut" for="metroVol">100%</output></div>
         <div class="control-row"><label for="beats">Tempo</label><select id="beats"><option value="2">2/4</option><option value="3">3/4</option><option value="4" selected>4/4</option><option value="6">6/8</option></select></div>
         <button id="metroToggle" class="btn full"><svg class="ico"><use href="#i-play"/></svg><span>Avvia</span></button>
         <p class="small-text muted">Nel 6/8 il valore BPM indica i due battiti principali (note puntate); i click sono sei.</p>

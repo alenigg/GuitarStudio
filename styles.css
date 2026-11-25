@@ -455,3 +455,41 @@ input[type=range]{padding:0;min-height:0;border:0;background:none;accent-color:v
 .ex-bar small{position:absolute;top:3px;left:7px;font-size:10px;font-weight:500;color:var(--muted)}
 .exercise .tab-title{margin:12px 0 6px;font-size:13px;color:var(--ink2)}
 .exercise .tab-block{font-size:12px;padding:10px}
+
+/* ===== 3.1 ===== */
+/* Finestre: la riga con la X resta sempre visibile in alto mentre scorri */
+.lesson-dialog{padding-top:0}
+.dialog-head{position:sticky;top:0;z-index:5;margin:0 -22px 6px;padding:14px 22px 10px;background:var(--surface);border-bottom:1px solid transparent;transition:border-color .15s}
+.dialog-head.scrolled{border-bottom-color:var(--line)}
+/* Metronomo: suoni e volume */
+.metro-sound{margin:6px 0 4px;padding-top:12px;border-top:1px solid var(--line)}
+.control-label{display:block;color:var(--muted);font-size:14px;margin-bottom:2px}
+.metro-sound .chips{margin:6px 0 4px}
+.vol-row{gap:14px}
+.vol-row .range{flex:1;margin:0}
+.vol-row output{min-width:44px;text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+/* Ritmica illustrata negli esercizi */
+.rhythm-wrap h3{margin-top:18px}
+.rhythm{margin:6px 0 10px}
+.rh-bar{display:flex;gap:4px;border-left:3px solid var(--ink2);border-right:3px solid var(--ink2);padding:0 4px;border-radius:2px}
+.rh-beat{flex:1;display:flex;gap:2px;padding:2px;border-radius:9px;background:var(--surface);transition:background .08s}
+.rh-beat.now{background:var(--accent-soft);box-shadow:inset 0 0 0 1.5px var(--accent)}
+.rh-cell{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;padding:2px 0 4px;border-radius:7px}
+.rh-cell.on-beat{background:color-mix(in srgb,var(--surface2) 70%,transparent)}
+.rh-over{min-height:15px;font-size:12px;font-weight:700;color:var(--accent);line-height:15px}
+.rh-acc{min-height:13px;font-size:13px;font-weight:800;line-height:13px;color:var(--accent)}
+.rh-sym{font-size:24px;line-height:30px;height:30px;font-weight:700;color:var(--ink)}
+.rh-cell.ghost .rh-sym{color:var(--muted);opacity:.45;font-weight:400}
+.rh-cell.rest .rh-sym{font-size:22px;color:var(--ink2);font-family:"Segoe UI Symbol","Noto Music","Apple Symbols",serif}
+.rh-cell.finger .rh-sym{font-family:var(--serif);font-size:20px;color:var(--accent)}
+.rh-cell.accent .rh-sym{color:var(--accent)}
+.rh-count{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.rh-cell.on-beat .rh-count{color:var(--ink);font-weight:700}
+.rh-legend{display:flex;flex-wrap:wrap;gap:4px 14px;margin:8px 0 0!important;font-size:12.5px!important;line-height:1.45!important;color:var(--muted)!important}
+.rh-legend b{color:var(--ink);font-size:15px}.rh-legend b.ghost{color:var(--muted);opacity:.6}
+.rest-ico{width:12px;height:24px;margin-top:3px;display:block}
+.rh-legend .rest-ico{display:inline-block;width:8px;height:15px;margin:0;vertical-align:-3px}
+.rh-cell.hold .rh-sym{color:var(--muted);font-weight:400}
+.rh-legend b.hold{color:var(--muted)}
+.rhythm:not(.has-over) .rh-over,.rhythm:not(.has-acc) .rh-acc{display:none}
+.rhythm-wrap{margin:16px 0 0}
