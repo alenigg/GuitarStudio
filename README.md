@@ -1,4 +1,4 @@
-# Guitar Studio PWA 3.1.0
+# Guitar Studio PWA 3.1.1
 
 Applicazione statica per lo studio della chitarra. Dopo il primo caricamento, le funzioni principali sono disponibili offline.
 
@@ -15,11 +15,16 @@ Applicazione statica per lo studio della chitarra. Dopo il primo caricamento, le
 ## Pubblicazione
 Estrai lo ZIP e pubblica il contenuto della cartella su un hosting HTTPS statico, per esempio Netlify o GitHub Pages. Le istruzioni passo passo sono in `ISTRUZIONI_PUBBLICAZIONE_HTTPS.txt`.
 
-La cache del service worker per questa versione è `guitar-studio-v3-1-0`.
+La cache del service worker per questa versione è `guitar-studio-v3-1-1`.
 
 ## Dati e privacy
 Il diario e i progressi vengono salvati nel browser del dispositivo. Usa “Salva backup” prima di cambiare indirizzo del sito, browser o dispositivo; usa “Ripristina backup” per recuperare i dati.
 
+
+## Novità 3.1.1 — correzioni grafiche
+
+- **Accordatore**: il quadrante è di nuovo un arco con la lancetta, centrato sotto la nota e allineato alle scritte «calante / accordata / crescente». Dalla 2.0 una regola grafica delle Sfide lo trasformava in una barra piatta, allineata a sinistra sugli schermi larghi.
+- **Sfide**: nelle pagine «Prova il microfono» e calibrazione non compare più due volte il pulsante «← Sfide».
 
 ## Novità 3.1.0 — ritmica illustrata, suoni del metronomo, finestre più comode
 

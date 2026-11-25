@@ -688,7 +688,7 @@ async function micTest(){
   html(stage,`<button class="back" id="bkHub"><svg class="ico"><use href="#i-back"/></svg>Sfide</button>
   <div class="page-heading"><p class="eyebrow">Sfide · Microfono</p><h1>Prova il microfono</h1><p class="lede">Suona una corda: qui sotto vedi che nota sente il telefono.</p></div>
   <div class="card mic-test"><div class="mt-note" id="mtNote" aria-live="polite">—</div><div class="mt-sub" id="mtSub">Sto attivando il microfono…</div>
-  <div class="meter" aria-hidden="true"><span id="mtLevel"></span></div>
+  <div class="mic-meter" aria-hidden="true"><span id="mtLevel"></span></div>
   <div class="tune-bar" aria-hidden="true"><i></i><b id="mtNeedle"></b></div><p class="small-text muted" id="mtHelp"></p>
   <div class="btn-row"><button class="btn secondary" id="mtCalib">Calibra il ritardo</button></div></div>`);
   sc('#bkHub').addEventListener('click',backToHub);sc('#mtCalib').addEventListener('click',()=>calibrate());

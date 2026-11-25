@@ -408,7 +408,7 @@ input[type=range]{padding:0;min-height:0;border:0;background:none;accent-color:v
 .rows.compact .row{padding:10px 14px}.rows.compact .row.sel{border-color:var(--accent);background:var(--accent-soft)}.rows.compact .chev{color:var(--accent);font-weight:700}
 .mic-test{text-align:center}.mt-note{font-family:var(--serif);font-size:clamp(40px,12vw,64px);line-height:1.1;min-height:72px}
 .mt-sub{color:var(--muted);margin-bottom:12px}
-.meter{height:10px;border-radius:99px;background:var(--surface2);overflow:hidden;margin:10px 0}.meter span{display:block;height:100%;width:0;background:var(--accent);transition:width .08s}
+.mic-meter{height:10px;border-radius:99px;background:var(--surface2);overflow:hidden;margin:10px 0}.mic-meter span{display:block;height:100%;width:0;background:var(--accent);transition:width .08s}
 .tune-bar{position:relative;height:12px;border-radius:99px;background:var(--surface2);margin:14px 0}.tune-bar i{position:absolute;left:50%;top:-3px;bottom:-3px;width:2px;background:var(--good)}.tune-bar b{position:absolute;left:50%;top:-2px;width:14px;height:16px;margin-left:-7px;border-radius:5px;background:var(--accent);transition:left .1s}
 .calib{text-align:center}.flash{width:120px;height:120px;border-radius:50%;margin:8px auto 14px;background:var(--surface2);border:3px solid var(--line2);transition:background .05s}.flash.on{background:var(--accent);border-color:var(--accent);box-shadow:0 0 40px var(--accent)}
 .calib-count{font-family:var(--serif);font-size:24px;margin:0 0 6px}
@@ -493,3 +493,5 @@ input[type=range]{padding:0;min-height:0;border:0;background:none;accent-color:v
 .rh-legend b.hold{color:var(--muted)}
 .rhythm:not(.has-over) .rh-over,.rhythm:not(.has-acc) .rh-acc{display:none}
 .rhythm-wrap{margin:16px 0 0}
+/* 3.1.1: test microfono e calibrazione hanno già il loro «← Sfide»: niente doppione */
+#gioco:has(#bkHub) > .back{display:none}
