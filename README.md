@@ -1,4 +1,4 @@
-# Guitar Studio PWA 2.3.0
+# Guitar Studio PWA 3.0.0
 
 Applicazione statica per lo studio della chitarra. Dopo il primo caricamento, le funzioni principali sono disponibili offline.
 
@@ -9,17 +9,26 @@ Applicazione statica per lo studio della chitarra. Dopo il primo caricamento, le
 - Tema chiaro e scuro, backup locale e controllo aggiornamenti.
 - La voce Canzoni resta nei menu e mostra “Work in progress”.
 - **Sfide** (novità 2.0): quattro giochi guidati dal microfono, con Allenatore, livelli, missione del giorno e collegamento al Diario.
-- Percorso progressivo: 23 lezioni, 12 tappe accordi e 24 esercizi, dalle basi al consolidamento.
+- Percorso progressivo: 23 lezioni, 12 tappe accordi e 32 esercizi, dalle basi al consolidamento.
 - Teoria ampliata: note, alterazioni, tastiera, scale, tonalità, triadi, ritmo e metodo di studio.
 
 ## Pubblicazione
 Estrai lo ZIP e pubblica il contenuto della cartella su un hosting HTTPS statico, per esempio Netlify o GitHub Pages. Le istruzioni passo passo sono in `ISTRUZIONI_PUBBLICAZIONE_HTTPS.txt`.
 
-La cache del service worker per questa versione è `guitar-studio-v2-3-0`.
+La cache del service worker per questa versione è `guitar-studio-v3-0-0`.
 
 ## Dati e privacy
 Il diario e i progressi vengono salvati nel browser del dispositivo. Usa “Salva backup” prima di cambiare indirizzo del sito, browser o dispositivo; usa “Ripristina backup” per recuperare i dati.
 
+
+## Novità 3.0.0 — nuova navigazione, metronomo più forte, giri classici
+
+- **Barra in basso**: Home, Esercizi, Accordi, Accordatore e Metronomo, cioè le pagine che si usano mentre si suona, a un tocco da ovunque. Studio, Strumenti, Sfide, Canzoni e Diario si aprono dalla Home.
+- **Home**: Sfide è ora un riquadro come Studio, Strumenti, Canzoni e Diario, senza l'etichetta «Novità». Le funzioni future useranno lo stesso riquadro. Rimossa la sezione «Accesso rapido».
+- **Metronomo**: nuovo click tipo woodblock, con l'energia tra 2 e 4 kHz (la zona che l'orecchio e gli altoparlanti dei telefoni rendono meglio). Il campione arriva quasi al fondo scala (−0,4 dBFS sull'accento) senza mai superarlo, quindi senza distorsione. L'accento si riconosce dall'altezza più acuta. Lo stesso click è usato dal metronomo delle lezioni e delle Sfide.
+- **8 nuovi esercizi sui giri classici** (25–32): blues a 12 battute in LA (A), shuffle boogie, blues in MI (E) con quick change, blues minore, giro di DO (I–vi–IV–V), cadenza andalusa, II–V–I jazz, giro del Canone di Pachelbel. Ognuno ha lo schema delle battute.
+- **Esercizi illustrati**: dove un esercizio cita degli accordi, i diagrammi (gli stessi della pagina Accordi) sono dentro l'esercizio; toccandoli si apre la scheda con l'ascolto. Gli esercizi di tecnica hanno una tablatura con dita o direzione della pennata.
+- **Aggiornamenti più affidabili**: durante l'installazione di una nuova versione l'app scarica sempre i file dalla rete. Prima poteva capitare (per qualche minuto dopo una pubblicazione) che la nuova versione partisse con alcuni file della precedente.
 
 ## Novità 2.3.0 — schermo sempre acceso
 

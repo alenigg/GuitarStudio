@@ -432,3 +432,26 @@ input[type=range]{padding:0;min-height:0;border:0;background:none;accent-color:v
 .wake-card .check-field{margin:10px 0 6px}
 .wake-card .small-text{margin:0}
 .wake-card+.app-card{margin-top:14px}
+
+/* ===== 3.0 ===== */
+/* Home: riquadri delle funzioni, tutti uguali; l'ultima riga si allarga per riempire lo spazio */
+.feature-grid{display:flex;flex-wrap:wrap;gap:10px}
+.feature-grid>.tile{flex:1 1 calc(50% - 5px);min-width:0}
+@media (min-width:700px){.feature-grid>.tile{flex:1 1 120px}}
+/* Barra in basso con cinque voci: etichette compatte anche sui telefoni stretti */
+.nav-item{min-width:0}
+.nav-item small{font-size:11px;letter-spacing:-.01em;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+/* Esercizi: diagrammi degli accordi, schema del giro, titoli delle tab */
+.ex-chords,.ex-grid-wrap{margin:16px 0}
+.ex-chords h3,.ex-grid-wrap h3{margin:0 0 8px}
+.ex-chord-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.ex-chord{display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:8px 6px 6px;color:var(--ink);text-align:center}
+.ex-chord:hover{border-color:var(--line2)}
+.ex-chord b{font-size:12px;font-weight:600;line-height:1.25;color:var(--ink)}
+.ex-chord .chord-diagram{max-width:120px;margin-top:2px}
+.ex-grid{display:flex;flex-direction:column;gap:6px}
+.ex-grid-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.ex-bar{position:relative;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:16px 4px 10px;text-align:center;font-weight:600;font-size:15px;color:var(--ink)}
+.ex-bar small{position:absolute;top:3px;left:7px;font-size:10px;font-weight:500;color:var(--muted)}
+.exercise .tab-title{margin:12px 0 6px;font-size:13px;color:var(--ink2)}
+.exercise .tab-block{font-size:12px;padding:10px}

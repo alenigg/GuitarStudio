@@ -1,6 +1,6 @@
 'use strict';
-// Guitar Studio 2.1 — logica dell'app. I contenuti didattici sono in data.js.
-const APP_VERSION='2.3.0';
+// Guitar Studio 3.0 — logica dell'app. I contenuti didattici sono in data.js.
+const APP_VERSION='3.0.0';
 const $=id=>document.getElementById(id);
 const AudioCtor=window.AudioContext||window.webkitAudioContext;
 const pad2=n=>String(n).padStart(2,'0');
@@ -45,7 +45,6 @@ function pluckTone(ctx,midi,start,duration=2.2,velocity=.13,pan=0){
 
 /* ---------- Navigazione (con cronologia: il tasto indietro di Android funziona) ---------- */
 const views=[...document.querySelectorAll('.view')];
-const parentOf={lezioni:'studio',teoria:'studio',accordi:'studio',percorso:'studio',esercizi:'studio',accordatore:'strumenti',metronomo:'strumenti',gioco:'sfide'};
 function show(name){
   if(!$(name)||!$(name).classList.contains('view'))name='home';
   if(name==='gioco'&&!(window.GSGame&&GSGame.ready())){name='sfide';history.replaceState(null,'','#sfide')}
@@ -53,8 +52,8 @@ function show(name){
   if(name!=='accordatore')stopTuner();
   stopInlineMetronome();
   views.forEach(v=>v.classList.toggle('active',v.id===name));
-  const tab=parentOf[name]||name;
-  document.querySelectorAll('.nav-item').forEach(b=>{const on=b.dataset.go===tab;b.classList.toggle('active',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
+  // Barra in basso: si illumina la voce della pagina aperta (Home, Esercizi, Accordi, Accordatore, Metronomo)
+  document.querySelectorAll('.nav-item').forEach(b=>{const on=b.dataset.go===name;b.classList.toggle('active',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
   window.scrollTo(0,0);
   if(window.GSGame)GSGame.onView(name);
 }
@@ -131,7 +130,21 @@ function toggleDone(k){const store=k[0]==='p'?KEY_PATH:KEY_DONE,val=k[0]==='p'?N
 function refreshDoneMarks(){document.querySelectorAll('[data-done-row]').forEach(r=>r.classList.toggle('is-done',isDone(r.dataset.doneRow)));const t=document.getElementById('doneCount');if(t){const pp=chordPathStages.filter((_,i)=>isDone('p'+i)).length;const ph=document.getElementById('pathProgressText');if(ph)ph.textContent=`${pp} di ${chordPathStages.length} tappe completate`;const pb=document.getElementById('pathProgressBar');if(pb)pb.style.width=`${pp/chordPathStages.length*100}%`;const ls=document.getElementById('lessonCountSub');if(ls)ls.textContent=`Percorso didattico, ${lessons.length} lezioni`;const l=lessons.filter(x=>isDone('l'+x.n)).length,e=exerciseData.filter(x=>isDone('e'+x.n)).length;t.textContent=`${l}/${lessons.length} lezioni · ${e}/${exerciseData.length} esercizi`}}
 function rowButton(num,title,sub,key){const b=document.createElement('button');b.className='row';if(key)b.dataset.doneRow=key;b.innerHTML=`<span class="row-ico">${num}</span><span class="row-body"><b>${title}</b><small>${sub}</small></span>${ico('next','chev')}`;return b}
 lessons.forEach(l=>{const b=rowButton(l.n,l.title,`${l.sub} · ${l.time}`,'l'+l.n);b.addEventListener('click',()=>openDialog('Lezione',`<h2>${l.n} · ${l.title}</h2><p class="muted">${l.sub} · ${l.time}</p>${l.body}`,{chords:lessonChordRefs[l.n]||[],bpm:l.bpm!==undefined?l.bpm:(l.body.toLowerCase().includes('metronomo')?60:0),beats:l.beats||4,doneKey:'l'+l.n}));$('lessonList').appendChild(b)});
-exerciseData.forEach(ex=>{const b=rowButton(ex.n,ex.title,ex.level,'e'+ex.n);b.addEventListener('click',()=>openDialog('Esercizio',`<h2>${ex.n} · ${ex.title}</h2><p class="muted">${ex.level}</p><p>${ex.body}</p><div class="exercise"><b>Sequenza da provare</b><p class="exercise-pattern">${ex.pattern}</p>${ex.tab?`<pre class="tab-block" aria-label="Tablatura">${ex.tab.join('\n')}</pre>`:''}<h3>Procedura</h3><ol><li>Prepara la posizione e suona lentamente una volta per prendere confidenza.</li><li>Ripeti la sequenza per quattro cicli, controllando che ogni movimento sia preciso.</li><li>Fai una breve pausa, poi riparti e confronta la regolarità del suono.</li><li>Concludi con un ciclo lento e pulito, senza accelerare per finire prima.</li></ol><p><b>Obiettivo:</b> completare tre cicli consecutivi senza fermarti e senza tensione.</p></div>`,{chords:ex.chords||[],bpm:ex.bpm||0,beats:ex.beats||4,doneKey:'e'+ex.n}));$('exerciseList').appendChild(b)});
+function exerciseChordStrip(names){
+  const list=names.map(chordByName).filter(Boolean);if(!list.length)return '';
+  return `<div class="ex-chords"><h3>Accordi usati</h3><div class="ex-chord-grid">${list.map(c=>`<button type="button" class="ex-chord" data-open-chord="${esc(c.name)}" aria-label="Apri la scheda di ${esc(chordLabel(c))}"><b>${esc(chordLabel(c))}</b>${chordSVG(c)}</button>`).join('')}</div><p class="small-text muted">Tocca un diagramma per ascoltare l'accordo e vederne le note.</p></div>`;
+}
+function exerciseGrid(ex){
+  if(!ex.grid)return '';
+  const cell=n=>n.split(' · ').map(x=>{const c=chordByName(x);return c?`<span title="${esc(chordLabel(c))}">${esc(c.intl||intlName(c))}</span>`:esc(x)}).join(' · ');
+  let bar=0;
+  return `<div class="ex-grid-wrap"><h3>Schema del giro</h3><div class="ex-grid">${ex.grid.map(row=>`<div class="ex-grid-row">${row.map(n=>`<div class="ex-bar"><small>${++bar}</small>${cell(n)}</div>`).join('')}</div>`).join('')}</div>${ex.gridNote?`<p class="small-text muted">${esc(ex.gridNote)}</p>`:''}</div>`;
+}
+function exerciseTabs(ex){
+  const tabs=ex.tabs||(ex.tab?[{title:'',lines:ex.tab}]:[]);
+  return tabs.map(t=>`${t.title?`<p class="tab-title">${esc(t.title)}</p>`:''}<pre class="tab-block" aria-label="Tablatura">${esc(t.lines.join('\n'))}</pre>`).join('');
+}
+exerciseData.forEach(ex=>{const b=rowButton(ex.n,ex.title,ex.level,'e'+ex.n);b.addEventListener('click',()=>openDialog('Esercizio',`<h2>${ex.n} · ${ex.title}</h2><p class="muted">${ex.level}</p><p>${ex.body}</p>${exerciseChordStrip(ex.chords||[])}${exerciseGrid(ex)}<div class="exercise"><b>Sequenza da provare</b><p class="exercise-pattern">${ex.pattern}</p>${exerciseTabs(ex)}<h3>Procedura</h3><ol><li>Prepara la posizione e suona lentamente una volta per prendere confidenza.</li><li>Ripeti la sequenza per quattro cicli, controllando che ogni movimento sia preciso.</li><li>Fai una breve pausa, poi riparti e confronta la regolarità del suono.</li><li>Concludi con un ciclo lento e pulito, senza accelerare per finire prima.</li></ol><p><b>Obiettivo:</b> completare tre cicli consecutivi senza fermarti e senza tensione.</p></div>`,{bpm:ex.bpm||0,beats:ex.beats||4,doneKey:'e'+ex.n}));$('exerciseList').appendChild(b)});
 
 /* ---------- Accordi ---------- */
 const NOTE_INT=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];
@@ -312,12 +325,33 @@ function metroCfg(){const v=$('beats').value;return v==='6'?{n:6,div:3,level:i=>
 function renderLights(){const c=metroCfg();$('beatLights').innerHTML=Array.from({length:c.n},(_,i)=>`<i class="${c.level(i)===2?'accent':''}"></i>`).join('')}
 $('beats').addEventListener('change',()=>{renderLights();metro.i=0});
 renderLights();
+// Click del metronomo (3.0): suono tipo «woodblock» calcolato una volta sola e normalizzato.
+// Energia concentrata tra 2 e 4 kHz, dove l'orecchio è più sensibile e anche gli altoparlanti dei telefoni rendono bene.
+// Picco del campione a −0,4 dBFS (accento) e −0,9 dBFS (battiti normali): il più forte possibile senza superare
+// il fondo scala, quindi senza distorsione digitale. L'accento si distingue soprattutto per l'altezza.
+const CLICK_SPEC=[{f:2000,peak:.90},{f:2350,peak:.92},{f:2900,peak:.955}];
+const clickCache=new WeakMap();
+function clickBuffers(ctx){
+  let b=clickCache.get(ctx);if(b)return b;
+  const sr=ctx.sampleRate,len=Math.floor(sr*.07);
+  b=CLICK_SPEC.map(({f,peak},lv)=>{
+    const buf=ctx.createBuffer(1,len,sr),d=buf.getChannelData(0);let seed=9871+lv,max=0;
+    const rnd=()=>{seed=(seed*16807)%2147483647;return seed/1073741823.5-1};
+    for(let i=0;i<len;i++){
+      const t=i/sr,tone=Math.exp(-t/.014),body=Math.exp(-t/.022),tick=Math.exp(-t/.0009);
+      let v=tone*(Math.sin(2*Math.PI*f*t)+.5*Math.sin(2*Math.PI*f*1.51*t))+.45*body*Math.sin(2*Math.PI*f*.5*t)+.5*tick*rnd();
+      v*=Math.min(1,i/(sr*.0004));                       // attacco di 0,4 ms: nessuno «schiocco» digitale
+      if(i>len-sr*.004)v*=(len-i)/(sr*.004);              // coda sfumata a zero
+      d[i]=v;if(Math.abs(v)>max)max=Math.abs(v);
+    }
+    for(let i=0;i<len;i++)d[i]*=peak/max;
+    return buf;
+  });
+  clickCache.set(ctx,b);return b;
+}
 function clickSound(ctx,time,level){
-  const o=ctx.createOscillator(),g=ctx.createGain();
-  o.type='sine';o.frequency.value=[850,1000,1200][level];
-  const peak=[.1,.16,.24][level];
-  g.gain.setValueAtTime(.0001,time);g.gain.exponentialRampToValueAtTime(peak,time+.004);g.gain.exponentialRampToValueAtTime(.0001,time+.065);
-  o.connect(g);g.connect(ctx.destination);o.start(time);o.stop(time+.07);
+  const src=ctx.createBufferSource();src.buffer=clickBuffers(ctx)[level]||clickBuffers(ctx)[0];
+  src.connect(ctx.destination);src.start(time);
 }
 function metroTick(){
   const ctx=metro.ctx,c=metroCfg();
