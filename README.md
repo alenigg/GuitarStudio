@@ -1,4 +1,4 @@
-# Guitar Studio PWA 3.1.1
+# Guitar Studio PWA 3.2.0
 
 Applicazione statica per lo studio della chitarra. Dopo il primo caricamento, le funzioni principali sono disponibili offline.
 
@@ -15,11 +15,20 @@ Applicazione statica per lo studio della chitarra. Dopo il primo caricamento, le
 ## Pubblicazione
 Estrai lo ZIP e pubblica il contenuto della cartella su un hosting HTTPS statico, per esempio Netlify o GitHub Pages. Le istruzioni passo passo sono in `ISTRUZIONI_PUBBLICAZIONE_HTTPS.txt`.
 
-La cache del service worker per questa versione è `guitar-studio-v3-1-1`.
+La cache del service worker per questa versione è `guitar-studio-v3-2-0`.
 
 ## Dati e privacy
 Il diario e i progressi vengono salvati nel browser del dispositivo. Usa “Salva backup” prima di cambiare indirizzo del sito, browser o dispositivo; usa “Ripristina backup” per recuperare i dati.
 
+
+## Novità 3.2.0 — nuovo accordatore
+
+L'accordatore è stato rifatto, prendendo spunto da GuitarTuna.
+- **Riconosce davvero le note**: prima una corda suonata piano, o che si stava smorzando, veniva ignorata (soglia di volume fissa troppo alta per il microfono del telefono) e nei passaggi tra una corda e l'altra comparivano note sbagliate. Ora la soglia si adatta al rumore della stanza, un filtro toglie il ronzio di rete, e un controllo sulle armoniche evita gli errori d'ottava e le note "fantasma" create da altre corde che vibrano.
+- **Lettura stabile**: la nota deve ripetersi prima di essere mostrata, la lancetta si muove morbida e l'ultima lettura resta visibile (attenuata) mentre la corda si spegne, invece di azzerarsi.
+- **Automatico o manuale**: in automatico riconosce da solo la corda; toccando una meccanica accordi solo quella corda (utile se è molto scordata). Tocca «Automatico» per tornare.
+- **Corde accordate in verde**: una corda tenuta entro ±5 cent per mezzo secondo diventa verde con la spunta; con tutte e sei compare «Tutte le corde sono accordate».
+- **Quadrante nuovo**: scala da −50 a +50 cent con la zona verde al centro, nota da accordare grande al centro, nota sentita e frequenza sotto. Indicazioni chiare: «tendi ↑» o «allenta ↓».
 
 ## Novità 3.1.1 — correzioni grafiche
 

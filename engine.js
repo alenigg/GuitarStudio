@@ -196,6 +196,78 @@
     return{ok:!!target&&target.score>=minScore&&target===scores[0],target:target?target.score:0,best:scores[0],scores};
   }
 
-  root.GSEngine={NOTE_IT,NOTE_INT,OPEN,midiToFreq,freqToMidi,noteName,pcLabel,stringNote,pitch,mag,pitchChecked,rmsLast,hfLast,NoteTracker,Analyzer,diffPitch,fft,chroma,chordPcsFromChord,chordScore,recognizeChord};
+  /* ---------- Accordatore: altezza robusta di una corda singola ----------
+     1) dimezza la frequenza di campionamento (filtro 1-2-1) per ridurre i calcoli;
+     2) NSDF (metodo McLeod): per ogni lobo positivo si prende il massimo, poi il primo che arriva all'86% del più alto;
+     3) controllo d'ottava sullo spettro: se il microfono del telefono "perde" la fondamentale, il periodo trovato
+        può essere metà (o un terzo) di quello vero. Si cercano allora le armoniche che solo la nota più grave avrebbe
+        (dispari rispetto a quella trovata): se ce ne sono, la nota vera è un'ottava (o una dodicesima) sotto;
+     4) affinamento parabolico sul picco dell'NSDF alla nota scelta.
+     Restituisce {f, clarity, rms} con f=-1 se non c'è una nota chiara. Nessuna soglia di volume fissa:
+     il controllo del volume (rispetto al rumore di fondo) è compito di chi chiama. */
+  function tunerPitch(input,srIn,opt={}){
+    const minHz=opt.minHz||58,maxHz=opt.maxHz||1050;
+    const n2=input.length>>1,x=new Float32Array(n2);let mean=0;for(let i=0;i<input.length;i++)mean+=input[i];mean/=input.length;
+    for(let i=0;i<n2;i++){const j=2*i;x[i]=(input[j>0?j-1:0]+2*input[j]+input[j+1])/4-mean}
+    const sr=srIn/2;
+    // passa-alto (Butterworth del 4° ordine, 62 Hz): toglie ronzio di rete e rombi che coprirebbero il MI (E) grave
+    for(let pass=0;pass<2;pass++){const w0=2*Math.PI*62/sr,al=Math.sin(w0)/(2*Math.SQRT1_2),cs=Math.cos(w0),a0=1+al;
+      const b0=(1+cs)/2/a0,b1=-(1+cs)/a0,b2=b0,a1=-2*cs/a0,a2=(1-al)/a0;let x1=0,x2=0,y1=0,y2=0;
+      for(let i=0;i<n2;i++){const v=x[i],y=b0*v+b1*x1+b2*x2-a1*y1-a2*y2;x2=x1;x1=v;y2=y1;y1=y;x[i]=y}}
+    let e=0;for(let i=n2>>2;i<n2;i++)e+=x[i]*x[i];const rms=Math.sqrt(e/(n2-(n2>>2)));
+    if(rms<1e-5)return{f:-1,clarity:0,rms};
+    // NSDF sugli ultimi campioni (≈85 ms): risponde in fretta e resta preciso
+    const nW=Math.min(n2,Math.round(sr*.09)),off=n2-nW,maxLag=Math.min(Math.floor(sr/minHz),Math.floor(nW/2)),W=nW-maxLag-1;
+    const nsdf=new Float32Array(maxLag+2);
+    for(let lag=0;lag<=maxLag+1;lag++){let acf=0,m=0;for(let i=off;i<off+W;i++){const a=x[i],b=x[i+lag];acf+=a*b;m+=a*a+b*b}nsdf[lag]=m?2*acf/m:0}
+    const minLag=Math.max(2,Math.floor(sr/maxHz));const peaks=[];let l=1;
+    while(l<=maxLag&&nsdf[l]>0)l++;                       // salta il primo lobo (attorno al ritardo zero)
+    let pos=false,best=-1;
+    for(;l<=maxLag;l++){const v=nsdf[l];if(v>0){if(!pos){pos=true;best=l}else if(v>nsdf[best])best=l}else if(pos){pos=false;if(best>=minLag)peaks.push(best)}}
+    if(pos&&best>=minLag&&best<maxLag)peaks.push(best);
+    if(!peaks.length)return{f:-1,clarity:0,rms};
+    const top=Math.max(...peaks.map(p=>nsdf[p]));
+    const lag0=peaks.find(p=>nsdf[p]>=.86*top);
+    const refine=L=>{const a=Math.max(1,Math.round(L*.97)-1),b=Math.min(maxLag,Math.round(L*1.03)+1);let k=a;for(let i=a;i<=b;i++)if(nsdf[i]>nsdf[k])k=i;
+      const y1=nsdf[k-1],y2=nsdf[k],y3=nsdf[k+1],den=y1-2*y2+y3,sh=den&&k>0&&k<=maxLag?.5*(y1-y3)/den:0;return{lag:k+sh,v:y2}};
+    let r=refine(lag0),f=sr/r.lag,clarity=r.v;
+    // spettro (finestra di Hann su tutto il blocco, zero-padding ×2) ridotto ai suoi picchi
+    let N=1;while(N*2<=n2)N*=2;const NF=N*2,re=new Float64Array(NF),im=new Float64Array(NF);
+    for(let i=0;i<N;i++)re[i]=x[n2-N+i]*(.5-.5*Math.cos(2*Math.PI*i/(N-1)));fft(re,im);
+    const df=sr/NF,half=NF/2,mg=new Float64Array(half);for(let k=0;k<half;k++)mg[k]=Math.hypot(re[k],im[k]);
+    const lo=Math.max(2,Math.floor(50/df)),hi=Math.min(half-2,Math.ceil(2100/df));let mmax=0;const band=[],sp=[];
+    for(let k=lo;k<=hi;k++){band.push(mg[k]);if(mg[k]>mmax)mmax=mg[k];
+      if(mg[k]>mg[k-1]&&mg[k]>=mg[k+1]){const y1=mg[k-1],y2=mg[k],y3=mg[k+1],den=y1-2*y2+y3,sh=den?.5*(y1-y3)/den:0;sp.push({f:(k+sh)*df,a:y2})}}
+    band.sort((a,b)=>a-b);const floor=band[band.length>>1]||0;
+    // ampiezza del picco più forte vicino a fr (entro ±35 cent o ±1,2 bin, il più largo dei due)
+    const M=fr=>{const tol=Math.max(fr*.0204,1.2*df*2);let v=0;for(const q of sp)if(Math.abs(q.f-fr)<=tol&&q.a>v)v=q.a;return v};
+    // una nota vera ha armoniche consecutive (1ª e 2ª, 2ª e 3ª o 3ª e 4ª), oppure una fondamentale dominante.
+    // Due corde che suonano insieme hanno un "periodo comune" più grave, ma senza armoniche consecutive.
+    const thr=Math.max(.08*mmax,4*floor),has=fr=>fr<2000&&M(fr)>thr;
+    const valid=fr=>{const p=[0,1,2,3,4].map(h=>h&&has(h*fr));return(p[1]&&p[2])||(p[2]&&p[3])||(p[3]&&p[4])||M(fr)>=.5*mmax};
+    const hsum=fr=>{let t=0;for(let h=1;h<=6&&h*fr<2000;h++)t+=M(h*fr);return t};
+    if(!opt.noOctave){
+      let moved=false;
+      // 3a) il periodo trovato è troppo corto (fondamentale persa dal microfono): la nota vera è più grave
+      for(const k of [3,2]){const g=f/k;if(g<minHz||sr/g>maxLag)continue;
+        const rk=refine(sr/g);if(rk.v<.5||!valid(g))continue;
+        const ev=[];for(let m=1;m*g<1800;m++){if(m%k)ev.push(M(m*g))}
+        ev.sort((a,b)=>b-a);const strong=ev[0]||0,second=ev[1]||0;
+        if(strong>4*floor&&(strong>.3*mmax||(strong>.12*mmax&&second>.08*mmax))){r=rk;f=sr/rk.lag;clarity=Math.max(clarity,rk.v);moved=true;break}}
+      // 3b) il periodo trovato è troppo lungo (periodo comune di due corde): si sale alla nota che ha armoniche vere
+      if(!moved&&!valid(f)){let bestK=null;
+        for(let k=2;k<=5;k++){const fk=f*k;if(fk>maxHz)break;const rk=refine(sr/fk);if(rk.v<.6||!valid(sr/rk.lag))continue;
+          const sc=hsum(sr/rk.lag);if(!bestK||sc>bestK.sc)bestK={rk,sc}}
+        if(bestK){r=bestK.rk;f=sr/r.lag;clarity=r.v}else clarity*=.8}
+    }
+    // 3c) indizio dall'app (corda scelta o appena riconosciuta): se la lettura è un'ottava o una dodicesima
+    //     sotto quella corda e la corda ha davvero energia, vale la corda (es. MI cantino = 3ª armonica del LA)
+    if(opt.hint&&!opt.noOctave){for(const k of [2,3]){const fk=f*k;if(Math.abs(1200*Math.log2(fk/opt.hint))>80)continue;
+      const rk=refine(sr/fk);if(rk.v>=.6&&M(sr/rk.lag)>=.25*mmax){r=rk;f=sr/rk.lag;clarity=Math.max(clarity*.98,rk.v);break}}}
+    if(f>maxHz||f<minHz)return{f:-1,clarity:0,rms};
+    return{f,clarity,rms};
+  }
+
+  root.GSEngine={NOTE_IT,NOTE_INT,OPEN,midiToFreq,freqToMidi,noteName,pcLabel,stringNote,pitch,mag,pitchChecked,rmsLast,hfLast,NoteTracker,Analyzer,diffPitch,tunerPitch,fft,chroma,chordPcsFromChord,chordScore,recognizeChord};
   if(typeof module!=='undefined')module.exports=root.GSEngine;
 })(typeof window!=='undefined'?window:globalThis);

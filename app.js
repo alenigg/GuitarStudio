@@ -1,6 +1,6 @@
 'use strict';
-// Guitar Studio 3.1.1 — logica dell'app. I contenuti didattici sono in data.js.
-const APP_VERSION='3.1.1';
+// Guitar Studio 3.2.0 — logica dell'app. I contenuti didattici sono in data.js.
+const APP_VERSION='3.2.0';
 const $=id=>document.getElementById(id);
 const AudioCtor=window.AudioContext||window.webkitAudioContext;
 const pad2=n=>String(n).padStart(2,'0');
@@ -435,51 +435,105 @@ function stopMetro(){
 }
 $('metroToggle').addEventListener('click',()=>metro.running?stopMetro():startMetro());
 
-/* ---------- Accordatore (autocorrelazione normalizzata + mediana) ---------- */
-const guitarStrings=[{n:'E2',f:82.4069},{n:'A2',f:110},{n:'D3',f:146.832},{n:'G3',f:195.998},{n:'B3',f:246.942},{n:'E4',f:329.628}];
-const tuner={running:false,starting:false,token:0,stream:null,ctx:null,raf:null,recent:[],lastHit:0,frame:0};
+/* ---------- Accordatore (ispirato a GuitarTuna) ----------
+   Analisi: GSEngine.tunerPitch (NSDF + controllo delle armoniche, vedi engine.js).
+   Modalità automatica: riconosce la corda più vicina alla nota suonata, con isteresi.
+   Modalità manuale: tocchi una meccanica e l'accordatore misura solo rispetto a quella corda.
+   Una corda tenuta entro ±5 cent per mezzo secondo viene segnata come accordata (meccanica verde). */
+const guitarStrings=[
+  {n:'E2',f:82.4069,it:'MI',intl:'E',label:'6ª corda · MI grave'},{n:'A2',f:110,it:'LA',intl:'A',label:'5ª corda · LA'},
+  {n:'D3',f:146.832,it:'RE',intl:'D',label:'4ª corda · RE'},{n:'G3',f:195.998,it:'SOL',intl:'G',label:'3ª corda · SOL'},
+  {n:'B3',f:246.942,it:'SI',intl:'B',label:'2ª corda · SI'},{n:'E4',f:329.628,it:'MI',intl:'E',label:'1ª corda · MI cantino'}];
+const TUNE_OK=5,TUNE_HOLD=500,HOLD_MS=1600;
+const tuner={running:false,starting:false,token:0,stream:null,ctx:null,raf:null,frame:0,
+  manual:-1,locked:-1,lockedAt:0,recent:[],shown:null,lastHit:0,noise:0,okSince:0,tuned:new Set(),pending:null,pendingN:0};
 (function buildPins(){
   const ns='http://www.w3.org/2000/svg',host=$('tunerPins');
   const visualOrder=[2,3,1,4,0,5];
   for(let pos=0;pos<visualOrder.length;pos++){
     const i=visualOrder[pos],side=pos%2===0?-1:1,y=42+Math.floor(pos/2)*43,x=170+side*57;
     const g=document.createElementNS(ns,'g');g.setAttribute('class','tuner-pin');
-    g.dataset.stringIndex=i;
+    g.dataset.stringIndex=i;g.setAttribute('tabindex','0');g.setAttribute('role','button');g.setAttribute('aria-label',`Accorda la ${guitarStrings[i].label} (${guitarStrings[i].intl})`);
     const mk=(tag,attrs,text)=>{const e=document.createElementNS(ns,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(text)e.textContent=text;return e};
-    const names=['MI (E)','LA (A)','RE (D)','SOL (G)','SI (B)','MI (E)'];
-    g.append(mk('line',{x1:170+side*32,y1:y,x2:x,y2:y}),mk('circle',{cx:x,cy:y,r:15}),mk('text',{x,y:y+3,'text-anchor':'middle','font-size':'7'},names[i]));
+    g.append(mk('line',{x1:170+side*32,y1:y,x2:x,y2:y}),mk('circle',{cx:x,cy:y,r:15}),mk('text',{x,y:y+3,'text-anchor':'middle','font-size':'7'},`${guitarStrings[i].it} (${guitarStrings[i].intl})`),
+      mk('text',{class:'check',x:x+side*24,y:y+4,'text-anchor':'middle'},'✓'),mk('rect',{class:'hit',x:x-24,y:y-21,width:48,height:42}));
+    const pick=()=>selectTunerString(i);
+    g.addEventListener('click',pick);g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick()}});
     host.appendChild(g);
   }
 })();
-function highlightTunerString(index){
-  document.querySelectorAll('.tuner-pin').forEach(p=>p.classList.toggle('selected',Number(p.dataset.stringIndex)===index));
-  $('headstockCaption').textContent=index>=0?`Meccanica evidenziata: ${['MI (E) grave','LA (A)','RE (D)','SOL (G)','SI (B)','MI (E) cantino'][index]}`:'Suona una corda per evidenziarne la meccanica';
+function paintPins(active){
+  document.querySelectorAll('.tuner-pin').forEach(p=>{const i=Number(p.dataset.stringIndex);
+    p.classList.toggle('selected',i===active);p.classList.toggle('locked',i===tuner.manual);p.classList.toggle('tuned',tuner.tuned.has(i));
+    p.setAttribute('aria-pressed',String(i===tuner.manual))});
+  const n=tuner.tuned.size;
+  $('headstockCaption').textContent=n===6?'Tutte le corde sono accordate ✓':n?`Corde accordate: ${n} su 6`:'Le corde accordate diventano verdi';
 }
-function detectPitch(buf,sr){
-  let rms=0;for(let i=0;i<buf.length;i++)rms+=buf[i]*buf[i];rms=Math.sqrt(rms/buf.length);if(rms<.01)return -1;
-  const minLag=Math.floor(sr/400),maxLag=Math.min(Math.floor(sr/70),Math.floor(buf.length/2)),W=buf.length-maxLag-2;
-  const nsdf=new Float32Array(maxLag+2);
-  for(let lag=minLag-1;lag<=maxLag+1;lag++){let acf=0,m=0;for(let i=0;i<W;i+=2){const a=buf[i],b=buf[i+lag];acf+=a*b;m+=a*a+b*b}nsdf[lag]=m?2*acf/m:0}
-  const peaks=[];let top=0;
-  for(let lag=minLag;lag<=maxLag;lag++){if(nsdf[lag]>.5&&nsdf[lag]>nsdf[lag-1]&&nsdf[lag]>=nsdf[lag+1]){peaks.push(lag);if(nsdf[lag]>top)top=nsdf[lag]}}
-  // Il primo picco abbastanza alto evita gli errori d'ottava verso il basso.
-  const lag=peaks.find(l=>nsdf[l]>=.9*top);if(lag===undefined)return -1;
-  const y1=nsdf[lag-1],y2=nsdf[lag],y3=nsdf[lag+1],den=y1-2*y2+y3,shift=den?.5*(y1-y3)/den:0;
-  return sr/(lag+shift);
+function paintMode(){
+  const auto=tuner.manual<0;$('tunerAuto').classList.toggle('active',auto);$('tunerAuto').setAttribute('aria-pressed',String(auto));
+  $('tunerModeHint').textContent=auto?'Riconosce da solo la corda che suoni':`Solo ${guitarStrings[tuner.manual].label} · tocca Automatico per tornare`;
 }
-const nearestString=f=>guitarStrings.reduce((b,s)=>Math.abs(Math.log2(f/s.f))<Math.abs(Math.log2(f/b.f))?s:b,guitarStrings[0]);
+function selectTunerString(i){
+  tuner.manual=tuner.manual===i?-1:i;tuner.locked=tuner.manual;tuner.shown=null;tuner.recent=[];tuner.okSince=0;
+  paintMode();
+  if(tuner.manual>=0)showTarget(tuner.manual);else if(!tuner.running||performance.now()-tuner.lastHit>HOLD_MS)tunerIdle();
+  paintPins(tuner.manual);
+  if(!tuner.running&&!tuner.starting)startTuner();
+}
+$('tunerAuto').addEventListener('click',()=>{if(tuner.manual>=0)selectTunerString(tuner.manual)});
+function showTarget(i){const s=guitarStrings[i];$('noteName').innerHTML=`${s.it}<small>(${s.intl})</small>`;$('stringName').textContent=`${s.label} · ${s.f.toFixed(1)} Hz`}
+function setNeedle(cents){const a=Math.max(-60,Math.min(60,cents*1.2));$('needle').setAttribute('transform',`rotate(${a.toFixed(2)} 150 150)`)}
+function setStatus(text,cls){const el=$('tunerStatus');el.textContent=text;el.className='tuner-status'+(cls?' '+cls:'')}
 function tunerIdle(){
-  $('noteName').textContent='—';$('frequency').textContent='-- Hz';$('cents').textContent='0 cent';$('stringName').textContent='Suona una corda';
-  $('needle').style.transform='rotate(0deg)';$('needle').classList.remove('ok');highlightTunerString(-1);
+  const panel=$('tunerPanel');panel.classList.remove('in-tune','stale');
+  if(tuner.manual>=0)showTarget(tuner.manual);else{$('noteName').textContent='—';$('stringName').textContent='Suona una corda'}
+  $('frequency').textContent='Nota sentita: —';$('cents').textContent='— cent';setNeedle(0);paintPins(tuner.manual);
+}
+const centsTo=(f,ref)=>1200*Math.log2(f/ref);
+function chooseString(f){
+  if(tuner.manual>=0)return tuner.manual;
+  let best=0;for(let i=1;i<6;i++)if(Math.abs(centsTo(f,guitarStrings[i].f))<Math.abs(centsTo(f,guitarStrings[best].f)))best=i;
+  // isteresi: resta sulla corda appena riconosciuta finché la nota non è chiaramente più vicina a un'altra
+  const L=tuner.locked;if(L>=0&&L!==best&&performance.now()-tuner.lockedAt<HOLD_MS&&Math.abs(centsTo(f,guitarStrings[L].f))<Math.abs(centsTo(f,guitarStrings[best].f))+60)return L;
+  return best;
+}
+function tunerReading(f,now){
+  // nuova nota: deve ripetersi per 3 analisi prima di sostituire quella mostrata (niente salti per un rumore)
+  if(tuner.recent.length&&Math.abs(centsTo(f,tuner.recent[tuner.recent.length-1]))>70){
+    if(tuner.pending&&Math.abs(centsTo(f,tuner.pending))<70)tuner.pendingN++;else{tuner.pending=f;tuner.pendingN=1}
+    if(tuner.pendingN<3&&now-tuner.lastHit<400)return;
+    tuner.recent=[];tuner.shown=null;tuner.okSince=0;
+  }
+  tuner.pending=null;tuner.pendingN=0;tuner.lastHit=now;
+  tuner.recent.push(f);if(tuner.recent.length>5)tuner.recent.shift();
+  const med=tuner.recent.slice().sort((a,b)=>a-b)[tuner.recent.length>>1];
+  const si=chooseString(med),st=guitarStrings[si];
+  if(si!==tuner.locked){tuner.shown=null;tuner.okSince=0}
+  tuner.locked=si;tuner.lockedAt=now;
+  const raw=centsTo(med,st.f);
+  tuner.shown=tuner.shown===null?raw:tuner.shown+.35*(raw-tuner.shown);
+  const c=tuner.shown,heard=Math.round(12*Math.log2(med/440)+69),pc=((heard%12)+12)%12,oct=Math.floor(heard/12)-1;
+  showTarget(si);
+  $('frequency').textContent=`Nota sentita: ${NOTE_IT[pc]} (${NOTE_INT[pc]}${oct}) · ${med.toFixed(1)} Hz`;
+  const semi=Math.round(c/100);$('cents').textContent=Math.abs(c)>=100?`${semi>0?'+':'−'}${Math.abs(semi)} ${Math.abs(semi)===1?'semitono':'semitoni'}`:(c>0?'+':'')+Math.round(c)+' cent';
+  setNeedle(c);
+  const ok=Math.abs(c)<=TUNE_OK,panel=$('tunerPanel');panel.classList.toggle('in-tune',ok);panel.classList.remove('stale');
+  if(ok){if(!tuner.okSince)tuner.okSince=now;if(now-tuner.okSince>=TUNE_HOLD&&!tuner.tuned.has(si)){tuner.tuned.add(si)}}else tuner.okSince=0;
+  paintPins(si);
+  if(ok)setStatus(tuner.tuned.size===6?'Accordata ✓ · tutte le corde pronte':'Accordata ✓','ok');
+  else if(c<-50)setStatus('Molto calante · tendi la corda ↑','low');
+  else if(c<0)setStatus('Calante · tendi leggermente ↑','low');
+  else if(c>50)setStatus('Molto crescente · allenta la corda ↓','high');
+  else setStatus('Crescente · allenta leggermente ↓','high');
 }
 async function startTuner(){
   if(tuner.running||tuner.starting){stopTuner();return}
-  if(!AudioCtor){$('tunerStatus').textContent='Audio non disponibile in questo browser.';return}
-  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){$('tunerStatus').textContent='Microfono non disponibile: apri l’app da Safari usando l’indirizzo HTTPS.';return}
+  if(!AudioCtor){setStatus('Audio non disponibile in questo browser.');return}
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){setStatus('Microfono non disponibile: apri l’app da Safari usando l’indirizzo HTTPS.');return}
   const token=++tuner.token;
   let ctx=null,stream=null;
   tuner.starting=true;
-  $('tunerStart').textContent='Annulla';$('tunerStatus').textContent='Attendo il permesso del microfono…';
+  $('tunerStart').textContent='Annulla';setStatus('Attendo il permesso del microfono…');
   try{
     // Safari su iOS richiede che resume() parta direttamente dal tocco, prima del dialogo del microfono.
     ctx=new AudioCtor();tuner.ctx=ctx;
@@ -491,25 +545,26 @@ async function startTuner(){
     await resumePromise;
     if(ctx.state==='suspended')await ctx.resume();
     if(ctx.state!=='running')throw new Error('audio-suspended');
-    const src=ctx.createMediaStreamSource(stream),an=ctx.createAnalyser();an.fftSize=4096;src.connect(an);
+    const src=ctx.createMediaStreamSource(stream),an=ctx.createAnalyser();an.fftSize=8192;src.connect(an);
     // Collega l’analizzatore a un’uscita muta: alcuni Safari aggiornano i campioni solo con un grafo attivo.
     const silent=ctx.createGain();silent.gain.value=0;an.connect(silent);silent.connect(ctx.destination);
-    const buf=new Float32Array(an.fftSize),byteBuf=new Uint8Array(an.fftSize);tuner.starting=false;tuner.running=true;tuner.recent=[];tuner.lastHit=performance.now();
-    $('tunerStart').textContent='Ferma accordatore';$('tunerStatus').textContent='Ascolto in corso…';
+    const buf=new Float32Array(an.fftSize),byteBuf=new Uint8Array(an.fftSize);
+    tuner.starting=false;tuner.running=true;tuner.recent=[];tuner.shown=null;tuner.lastHit=0;tuner.noise=0;tuner.okSince=0;
+    $('tunerStart').textContent='Ferma accordatore';setStatus('Ascolto… pizzica una corda');
     const loop=()=>{
       if(!tuner.running)return;
       if((tuner.frame++&1)===0){
         if(an.getFloatTimeDomainData)an.getFloatTimeDomainData(buf);else{an.getByteTimeDomainData(byteBuf);for(let i=0;i<byteBuf.length;i++)buf[i]=(byteBuf[i]-128)/128}
-        const f=detectPitch(buf,ctx.sampleRate);
-        if(f>60&&f<400){
-          tuner.lastHit=performance.now();tuner.recent.push(f);if(tuner.recent.length>5)tuner.recent.shift();
-          const med=tuner.recent.slice().sort((a,b)=>a-b)[Math.floor(tuner.recent.length/2)];
-          const st=nearestString(med),cents=1200*Math.log2(med/st.f);
-          const noteIdx=Math.round(12*Math.log2(med/440)+69)%12;$('noteName').textContent=`${NOTE_IT[noteIdx]} (${NOTE_INT[noteIdx]})`;$('frequency').textContent=med.toFixed(1)+' Hz';
-          $('cents').textContent=(cents>0?'+':'')+cents.toFixed(0)+' cent';$('stringName').textContent='Corda '+['MI (E)','LA (A)','RE (D)','SOL (G)','SI (B)','MI (E)'][guitarStrings.indexOf(st)];highlightTunerString(guitarStrings.indexOf(st));
-          $('needle').style.transform=`rotate(${Math.max(-42,Math.min(42,cents*1.25))}deg)`;$('needle').classList.toggle('ok',Math.abs(cents)<5);
-          $('tunerStatus').textContent=Math.abs(cents)<5?'Accordata ✓':cents<0?'Troppo bassa · tendi leggermente':'Troppo alta · allenta leggermente';
-        }else if(performance.now()-tuner.lastHit>700){tuner.recent=[];tunerIdle();$('tunerStatus').textContent='Ascolto in corso…'}
+        const now=performance.now();
+        const hintIdx=tuner.manual>=0?tuner.manual:(tuner.locked>=0&&now-tuner.lockedAt<HOLD_MS?tuner.locked:-1);
+        const p=GSEngine.tunerPitch(buf,ctx.sampleRate,{hint:hintIdx>=0?guitarStrings[hintIdx].f:0,maxHz:700});
+        // rumore di fondo: scende subito, sale piano (così una corda che suona a lungo non diventa "rumore")
+        tuner.noise=!tuner.noise?p.rms:p.rms<tuner.noise?tuner.noise*.8+p.rms*.2:tuner.noise*.997+p.rms*.003;
+        const loud=p.rms>Math.max(.0008,tuner.noise*2.2)||(tuner.lastHit&&now-tuner.lastHit<300&&p.rms>.0006);
+        if(p.f>0&&p.clarity>=.82&&loud&&p.f>=60&&p.f<=700)tunerReading(p.f,now);
+        else if(tuner.lastHit&&now-tuner.lastHit>HOLD_MS){tuner.lastHit=0;tuner.recent=[];tuner.shown=null;tuner.okSince=0;tunerIdle();
+          setStatus(tuner.tuned.size===6?'Tutte le corde sono accordate ✓':'Ascolto… pizzica una corda',tuner.tuned.size===6?'ok':'')}
+        else if(tuner.lastHit&&now-tuner.lastHit>350){$('tunerPanel').classList.add('stale');tuner.okSince=0}
       }
       tuner.raf=requestAnimationFrame(loop);
     };loop();
@@ -520,7 +575,7 @@ async function startTuner(){
     if(ctx&&tuner.ctx===ctx){try{ctx.close()}catch(e){}tuner.ctx=null}
     $('tunerStart').textContent='Avvia microfono';
     const messages={NotAllowedError:'Permesso microfono negato: abilitalo nelle impostazioni di Safari per questo sito.',NotFoundError:'Non è stato trovato un microfono disponibile.',NotReadableError:'Il microfono è occupato da un’altra app. Chiudila e riprova.',SecurityError:'Il microfono richiede una connessione HTTPS.'};
-    $('tunerStatus').textContent=messages[err.name]||'Non riesco ad avviare l’accordatore. Tocca Avvia e consenti il microfono.';
+    setStatus(messages[err.name]||'Non riesco ad avviare l’accordatore. Tocca Avvia e consenti il microfono.');
   }
 }
 function stopTuner(){
@@ -528,9 +583,10 @@ function stopTuner(){
   tuner.token++;tuner.running=false;tuner.starting=false;cancelAnimationFrame(tuner.raf);
   if(tuner.stream)tuner.stream.getTracks().forEach(t=>t.stop());tuner.stream=null;
   if(tuner.ctx){tuner.ctx.close();tuner.ctx=null}
-  $('tunerStart').textContent='Avvia microfono';$('tunerStatus').textContent='Accordatore fermo';tunerIdle();
+  tuner.lastHit=0;tuner.recent=[];tuner.shown=null;
+  $('tunerStart').textContent='Avvia microfono';setStatus(tuner.tuned.size===6?'Tutte le corde sono accordate ✓':'Accordatore fermo',tuner.tuned.size===6?'ok':'');tunerIdle();
 }
-$('tunerStart').addEventListener('click',startTuner);
+$('tunerStart').addEventListener('click',()=>{if(!tuner.running&&!tuner.starting)tuner.tuned.clear();startTuner()});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){stopTuner();stopMetro();if(window.GSGame)GSGame.interrupt()}});
 
 /* ---------- Installazione e aggiornamenti PWA ---------- */

@@ -131,23 +131,32 @@
     <section id="accordatore" class="view">
       <button class="back" data-go="strumenti"><svg class="ico"><use href="#i-back"/></svg>Strumenti</button>
       <div class="page-heading"><p class="eyebrow">Strumenti</p><h1>Accordatore</h1><p class="lede">Accordatura standard · MI (E) LA (A) RE (D) SOL (G) SI (B) MI (E)</p></div>
-      <div class="card tuner-panel">
-        <div class="tuner-status" id="tunerStatus" role="status">Pronto per accordare</div>
-        <div class="note-display"><span id="noteName">—</span><small id="frequency">-- Hz</small></div>
-        <div class="meter"><div class="meter-center"></div><div class="meter-needle" id="needle"></div></div>
+      <div class="card tuner-panel" id="tunerPanel">
+        <div class="tuner-mode"><button id="tunerAuto" class="chip active" aria-pressed="true">Automatico</button><span id="tunerModeHint">Riconosce da solo la corda che suoni</span></div>
+        <div class="gauge-wrap">
+        <svg class="tuner-gauge" id="tunerGauge" viewBox="0 0 300 168" role="img" aria-label="Quadrante dell'accordatore: a sinistra calante, al centro accordata, a destra crescente">
+          <path class="gauge-track" d="M39.1 86.0 A128 128 0 0 1 260.9 86.0"/>
+          <path class="gauge-zone" d="M136.6 22.7 A128 128 0 0 1 163.4 22.7"/>
+          <line class="tick major" x1="44.3" y1="89.0" x2="58.2" y2="97.0"/><line class="tick" x1="51.3" y1="78.3" x2="56.2" y2="81.8"/><line class="tick" x1="59.3" y1="68.4" x2="66.8" y2="75.1"/><line class="tick" x1="68.4" y1="59.3" x2="72.4" y2="63.8"/><line class="tick" x1="78.3" y1="51.3" x2="84.2" y2="59.4"/><line class="tick major" x1="89.0" y1="44.3" x2="97.0" y2="58.2"/><line class="tick" x1="100.4" y1="38.5" x2="104.4" y2="47.7"/><line class="tick" x1="112.3" y1="34.0" x2="114.2" y2="39.7"/><line class="tick" x1="124.6" y1="30.7" x2="126.7" y2="40.4"/><line class="tick" x1="137.2" y1="28.7" x2="137.9" y2="34.6"/><line class="tick major" x1="150.0" y1="28.0" x2="150.0" y2="44.0"/><line class="tick" x1="162.8" y1="28.7" x2="162.1" y2="34.6"/><line class="tick" x1="175.4" y1="30.7" x2="173.3" y2="40.4"/><line class="tick" x1="187.7" y1="34.0" x2="185.8" y2="39.7"/><line class="tick" x1="199.6" y1="38.5" x2="195.6" y2="47.7"/><line class="tick major" x1="211.0" y1="44.3" x2="203.0" y2="58.2"/><line class="tick" x1="221.7" y1="51.3" x2="215.8" y2="59.4"/><line class="tick" x1="231.6" y1="59.3" x2="227.6" y2="63.8"/><line class="tick" x1="240.7" y1="68.4" x2="233.2" y2="75.1"/><line class="tick" x1="248.7" y1="78.3" x2="243.8" y2="81.8"/><line class="tick major" x1="255.7" y1="89.0" x2="241.8" y2="97.0"/>
+          <text class="tick-label" x="65.1" y="105.0" text-anchor="middle">−50</text><text class="tick-label" x="101.0" y="69.1" text-anchor="middle">−25</text><text class="tick-label" x="199.0" y="69.1" text-anchor="middle">+25</text><text class="tick-label" x="234.9" y="105.0" text-anchor="middle">+50</text>
+          <g id="needle" class="gauge-needle"><line x1="150" y1="58" x2="150" y2="14"/><circle cx="150" cy="22" r="7"/></g>
+        </svg>
+        <div class="tuner-target"><span id="noteName">—</span><small id="stringName">Suona una corda</small></div>
+        </div>
         <div class="meter-labels"><span>♭ calante</span><span>accordata</span><span>crescente ♯</span></div>
-        <div class="tuner-readout"><span id="cents">0 cent</span><span id="stringName">Suona una corda</span></div>
+        <div class="tuner-status" id="tunerStatus" role="status" aria-live="polite">Pronto per accordare</div>
+        <div class="tuner-readout"><span id="frequency">Nota sentita: —</span><span id="cents">— cent</span></div>
+        <button id="tunerStart" class="btn full">Avvia microfono</button>
         <div class="headstock-card">
-          <div class="headstock-title">Corda rilevata</div>
-          <svg id="headstockGraphic" viewBox="0 0 340 170" role="img" aria-label="Schema delle sei meccaniche della chitarra">
+          <div class="headstock-title">Tocca una meccanica per accordare solo quella corda</div>
+          <svg id="headstockGraphic" viewBox="0 0 340 170" role="group" aria-label="Le sei meccaniche della chitarra">
             <path class="hs-body" d="M170 14 C145 14 132 29 132 52 L132 118 Q132 145 170 155 Q208 145 208 118 L208 52 C208 29 195 14 170 14Z"/>
             <path class="hs-mid" d="M170 20 L170 146"/>
             <g id="tunerPins"></g>
           </svg>
-          <div class="headstock-caption" id="headstockCaption">Suona una corda per evidenziarne la meccanica</div>
+          <div class="headstock-caption" id="headstockCaption">Le corde accordate diventano verdi</div>
         </div>
-        <button id="tunerStart" class="btn full">Avvia microfono</button>
-        <p class="small-text muted">Consenti l'accesso al microfono quando richiesto.</p>
+        <p class="small-text muted">Pizzica una corda alla volta e lasciala suonare. Consenti l'accesso al microfono quando richiesto.</p>
       </div>
     </section>
 

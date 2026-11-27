@@ -229,28 +229,48 @@ input[type=range]{padding:0;min-height:0;border:0;background:none;accent-color:v
 
 /* Accordatore */
 .tuner-panel,.metro-panel{text-align:center}
-.tuner-status{color:var(--muted);font-size:14px;min-height:22px}
-.note-display{margin:14px 0 6px}
-.note-display span{display:block;font-family:var(--serif);font-weight:500;font-size:clamp(64px,16vw,92px);line-height:1}
-.note-display small{font-size:15px;color:var(--muted)}
-.meter{height:96px;position:relative;max-width:480px;margin:10px auto 0;overflow:hidden}
-.meter:before{content:"";position:absolute;left:5%;right:5%;bottom:0;height:80px;border:8px solid var(--surface2);border-bottom:0;border-radius:260px 260px 0 0}
-.meter-center{position:absolute;bottom:0;left:50%;height:10px;width:10px;border-radius:50%;background:var(--ink2);transform:translateX(-50%)}
-.meter-needle{position:absolute;bottom:4px;left:50%;height:74px;width:3px;background:var(--accent);border-radius:4px;transform-origin:bottom center;transition:transform .12s,background .2s}
-.meter-needle.ok{background:var(--good)}
-.meter-labels{display:flex;justify-content:space-between;max-width:480px;margin:4px auto;color:var(--muted);font-size:11px;letter-spacing:.04em;text-transform:uppercase}
-.tuner-readout{display:flex;justify-content:space-between;margin:18px 0;color:var(--muted);font-size:14px}
-.headstock-card{margin:22px auto 16px;max-width:340px;padding:12px 14px 10px;background:var(--bg);border:1px solid var(--line);border-radius:var(--radius)}
+.tuner-mode{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:2px 0 6px;font-size:13px;color:var(--muted)}
+.gauge-wrap{position:relative;max-width:400px;margin:0 auto}
+.tuner-target{position:absolute;left:0;right:0;bottom:6px;pointer-events:none}
+.tuner-target span{display:block;font-family:var(--serif);font-weight:500;font-size:clamp(52px,14vw,76px);line-height:1;transition:color .2s}
+.tuner-target span small{font-size:.42em;color:var(--muted);margin-left:4px}
+.tuner-target>small{display:block;margin-top:4px;font-size:13px;color:var(--ink2)}
+.tuner-gauge{display:block;width:100%;margin:2px auto 0}
+.gauge-track{fill:none;stroke:var(--surface2);stroke-width:14;stroke-linecap:round}
+.gauge-zone{fill:none;stroke:var(--good);stroke-width:14;opacity:.35;transition:opacity .2s}
+.tick{stroke:var(--line2);stroke-width:2}.tick.major{stroke:var(--muted);stroke-width:2.5}
+.tick-label{fill:var(--muted);font:500 10px var(--sans)}
+.gauge-needle line{stroke:var(--accent);stroke-width:5;stroke-linecap:round;transition:stroke .2s}
+.gauge-needle circle{fill:var(--accent);transition:fill .2s}
+.tuner-panel.in-tune .gauge-needle line{stroke:var(--good)}.tuner-panel.in-tune .gauge-needle circle{fill:var(--good)}
+.tuner-panel.in-tune .gauge-zone{opacity:.9}
+.tuner-panel.in-tune .tuner-target span{color:var(--good)}
+.tuner-panel.stale .gauge-needle,.tuner-panel.stale .tuner-target span{opacity:.45}
+.tuner-status{font-size:17px;font-weight:600;color:var(--ink);min-height:26px;margin-top:6px}
+.tuner-status.low,.tuner-status.high{color:var(--accent)}
+.tuner-status.ok{color:var(--good)}
+.meter-labels{display:flex;justify-content:space-between;max-width:400px;margin:2px auto 2px;color:var(--muted);font-size:11px;letter-spacing:.04em;text-transform:uppercase}
+.tuner-readout{display:flex;justify-content:space-between;gap:10px;max-width:400px;margin:6px auto 14px;color:var(--muted);font-size:14px}
+.headstock-card{margin:16px auto 8px;max-width:340px;padding:12px 14px 10px;background:var(--bg);border:1px solid var(--line);border-radius:var(--radius)}
 .headstock-title{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
 #headstockGraphic{width:100%;height:150px;display:block;margin:4px auto}
 .hs-body{fill:var(--surface2);stroke:var(--line2);stroke-width:3}
 .hs-mid{stroke:var(--line2);stroke-width:2;fill:none}
 .tuner-pin line{stroke:var(--line2);stroke-width:5}
 .tuner-pin circle{fill:var(--surface);stroke:var(--line2);stroke-width:3}
-.tuner-pin text{fill:var(--ink2);font:600 7px var(--sans)}
+.tuner-pin{cursor:pointer;outline:none}
+.tuner-pin text{fill:var(--ink2);font:600 7px var(--sans);pointer-events:none}
+.tuner-pin rect.hit{fill:transparent;stroke:none}
+.tuner-pin:focus-visible circle{stroke:var(--ink);stroke-width:4}
+.tuner-pin.tuned line{stroke:var(--good)}
+.tuner-pin.tuned circle{fill:var(--good);stroke:var(--good)}
+.tuner-pin.tuned text{fill:#fff}
+.tuner-pin .check{fill:var(--good);font:700 15px var(--sans);opacity:0}
+.tuner-pin.tuned .check{opacity:1}
 .tuner-pin.selected line{stroke:var(--accent)}
 .tuner-pin.selected circle{fill:var(--accent);stroke:var(--accent)}
 .tuner-pin.selected text{fill:var(--accent-ink)}
+.tuner-pin.locked circle{stroke:var(--ink);stroke-width:3.5}
 .headstock-caption{font-size:13px;color:var(--ink2);font-weight:500}
 .string-strip{margin:12px auto 0;display:flex;justify-content:space-around;align-items:center;flex-wrap:wrap;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px;font-family:var(--serif);font-size:18px}
 .string-strip small{width:100%;text-align:center;font-family:var(--sans);font-size:12px;color:var(--muted)}

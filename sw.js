@@ -1,4 +1,4 @@
-const CACHE='guitar-studio-v3-1-1';
+const CACHE='guitar-studio-v3-2-0';
 const CORE=['./','./index.html','./styles.css','./data.js','./engine.js','./app.js','./game.js','./manifest.webmanifest','./assets/icon-192.png','./assets/icon-512.png'];
 // Installazione: ogni file viene scaricato dalla rete (cache:'reload'), mai dalla cache HTTP del browser,
 // altrimenti la nuova versione potrebbe partire con i file della precedente.
